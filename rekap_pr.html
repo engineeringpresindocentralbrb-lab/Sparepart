@@ -35,7 +35,7 @@
         <div class="bg-white rounded-lg shadow overflow-x-auto p-4 border border-red-200">
             <table class="w-full text-left border-collapse text-sm">
                 <tbody id="table-body">
-                    <tr><td class="p-4 text-center">Memuat data rekap...</td></tr>
+                    <tr><td class="p-4 text-center text-slate-500">Memuat data rekap...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -55,8 +55,29 @@
                     let headerRow = "";
                     let filteredCount = 0;
 
+                    // 1. Temukan Posisi Indeks Kolom Status Re-Order dan Sisa Stok Secara Dinamis
+                    let statusColIndex = 8; // Default Kolom ke-9 (Indeks 8)
+                    let sisaStokIndex = 6;  // Default Kolom Sisa Stok (Indeks 6)
+                    let batasMinIndex = 7;  // Default Kolom Batas Minimal (Indeks 7)
+
+                    if (data.length > 3) {
+                        const headers = data[3]; // Baris Header (Baris ke-4)
+                        headers.forEach((h, idx) => {
+                            const headerText = h.toString().toUpperCase().trim();
+                            if (headerText.includes("STATUS RE-ORDER") || headerText.includes("STATUS REORDER")) {
+                                statusColIndex = idx;
+                            }
+                            if (headerText.includes("SISA STOK")) {
+                                sisaStokIndex = idx;
+                            }
+                            if (headerText.includes("BATAS MINIMAL")) {
+                                batasMinIndex = idx;
+                            }
+                        });
+                    }
+
                     data.forEach((row, index) => {
-                        // Ambil baris Header (Baris ke-4 / indeks 3)
+                        // Simpan Baris Header (Baris ke-4)
                         if (index === 3) {
                             headerRow = `<tr class="bg-red-900 text-white font-bold">`;
                             row.forEach(cell => {
@@ -69,17 +90,24 @@
                         // Lewati baris judul atas
                         if (index < 3) return;
 
-                        // FITUR FILTER: Hanya tampilkan jika kolom STATUS RE-ORDER (Indeks ke-8) bernilai "PERLU PR"
-                        const statusReorder = row[8] ? row[8].toString().trim().toUpperCase() : "";
+                        // 2. PEMERIKSAAN KONDISI (Dua Proteksi):
+                        // A. Periksa apakah Teks Status mengandung "PERLU PR"
+                        const statusVal = row[statusColIndex] ? row[statusColIndex].toString().toUpperCase().trim() : "";
+                        const isStatusPerluPR = statusVal.includes("PERLU PR");
 
-                        if (statusReorder === "PERLU PR") {
+                        // B. Periksa Nilai Angka: Sisa Stok <= Batas Minimal
+                        const sisaStok = Number(row[sisaStokIndex]) || 0;
+                        const batasMin = Number(row[batasMinIndex]) || 0;
+                        const isStokKurang = (sisaStok <= batasMin);
+
+                        // HANYA TAMPIKLAN BARANG JIKA STATUS "PERLU PR" ATAU STOK SISA <= BATAS MINIMAL
+                        if (isStatusPerluPR || isStokKurang) {
                             filteredCount++;
                             html += `<tr class="border-b bg-red-50 hover:bg-red-100 transition">`;
                             row.forEach((cell, cellIdx) => {
                                 const val = (cell !== undefined && cell !== null) ? cell : '';
-                                // Beri warna merah tebal di kolom Status Re-order
-                                if (cellIdx === 8) {
-                                    html += `<td class="p-3 font-bold text-red-700">${val}</td>`;
+                                if (cellIdx === statusColIndex) {
+                                    html += `<td class="p-3 font-bold text-red-700">⚠️ PERLU PR</td>`;
                                 } else {
                                     html += `<td class="p-3 border-slate-200">${val}</td>`;
                                 }
@@ -88,12 +116,12 @@
                         }
                     });
 
-                    // Jika tidak ada barang yang perlu PR
+                    // 3. Tampilkan Hasil
                     if (filteredCount === 0) {
                         tableBody.innerHTML = headerRow + `
                             <tr>
-                                <td colspan="10" class="p-6 text-center text-green-700 font-bold bg-green-50">
-                                    ✅ Semua stok aman! Tidak ada barang yang mencapai batas minimal.
+                                <td colspan="12" class="p-6 text-center text-green-700 font-bold bg-green-50">
+                                    ✅ Semua stok aman! Tidak ada barang yang perlu dilakukan Purchasing Request (PR).
                                 </td>
                             </tr>
                         `;
