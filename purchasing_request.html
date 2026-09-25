@@ -7,9 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 min-h-screen">
+    <!-- Header Navigation -->
     <nav class="bg-slate-900 text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold">📦 System Monitoring Stok</h1>
+            <h1 class="text-xl font-bold flex items-center gap-2">📦 System Monitoring Stok</h1>
             <div class="flex gap-2">
                 <a href="index.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Home</a>
                 <a href="data_stok.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Data Stok</a>
@@ -21,23 +22,126 @@
         </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto py-8 px-4">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-bold text-slate-800">📋 Laporan Purchasing Request (PR) Tracking</h2>
-            <button onclick="loadData()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-3 py-2 rounded-lg">🔄 Refresh</button>
+    <div class="max-w-7xl mx-auto py-8 px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- FORM INPUT PR BARU -->
+        <div class="bg-white p-6 rounded-xl shadow border border-slate-200">
+            <h2 class="text-xl font-bold text-slate-800 mb-4">📋 Form Input PR Baru</h2>
+            <form id="form-pr" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700">No PR</label>
+                    <input type="text" id="noPR" required placeholder="Contoh: ENG/SP/26.09.004" class="w-full mt-1 p-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700">Nama Barang</label>
+                    <input type="text" id="namaBarang" required placeholder="Contoh: Air duster" class="w-full mt-1 p-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700">Tanggal PR</label>
+                    <input type="date" id="tanggalPR" required class="w-full mt-1 p-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700">Qty PR</label>
+                    <input type="number" id="qtyPR" required min="1" value="1" class="w-full mt-1 p-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700">Keterangan</label>
+                    <textarea id="keterangan" placeholder="Catatan PR" class="w-full mt-1 p-2 border rounded-lg"></textarea>
+                </div>
+                <button type="submit" id="btn-submit-pr" class="w-full bg-purple-700 hover:bg-purple-800 text-white font-bold py-2.5 rounded-lg transition">
+                    Simpan PR Baru
+                </button>
+            </form>
         </div>
 
-        <div class="bg-white rounded-lg shadow overflow-x-auto p-4 border border-slate-200">
-            <table class="w-full text-left border-collapse text-sm">
-                <tbody id="table-body">
-                    <tr><td class="p-8 text-center text-slate-500">Memuat data PR...</td></tr>
-                </tbody>
-            </table>
+        <!-- TABEL RIWAYAT PR TRACKING -->
+        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow border border-slate-200">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-slate-800">Riwayat Purchasing Request (PR)</h2>
+                <button onclick="loadData()" class="bg-slate-800 text-white text-xs px-3 py-1.5 rounded-lg">🔄 Refresh</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <tbody id="table-body">
+                        <tr><td class="p-4 text-center">Memuat data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT KEDATANGAN, UMUR PR, STATUS & KETERANGAN -->
+    <div id="modal-edit" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-lg font-bold text-slate-800 border-b pb-2">✏️ Edit Status Purchasing Request</h3>
+            <p class="text-xs text-amber-700 bg-amber-50 p-2 rounded border border-amber-200">
+                🔒 Informasi No PR, Nama Barang, Tanggal PR, dan Qty PR <strong>dikunci</strong>.
+            </p>
+
+            <!-- BIDANG TERKUNCI -->
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500">No PR (Terkunci)</label>
+                    <input type="text" id="edit-noPR" readonly class="w-full mt-1 p-2 bg-slate-100 border text-slate-600 rounded-lg cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500">Nama Barang (Terkunci)</label>
+                    <input type="text" id="edit-namaBarang" readonly class="w-full mt-1 p-2 bg-slate-100 border text-slate-600 rounded-lg cursor-not-allowed">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500">Tanggal PR (Terkunci)</label>
+                    <input type="text" id="edit-tanggalPR" readonly class="w-full mt-1 p-2 bg-slate-100 border text-slate-600 rounded-lg cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500">Qty PR (Terkunci)</label>
+                    <input type="text" id="edit-qtyPR" readonly class="w-full mt-1 p-2 bg-slate-100 border text-slate-600 rounded-lg cursor-not-allowed">
+                </div>
+            </div>
+
+            <hr class="my-2 border-slate-300">
+
+            <!-- BIDANG YANG BISA DIEDIT -->
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-800">Tanggal Datang ✏️</label>
+                    <input type="date" id="edit-tanggalDatang" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-800">Qty Datang ✏️</label>
+                    <input type="number" id="edit-qtyDatang" min="0" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-800">Umur PR (Hari) ✏️</label>
+                    <input type="number" id="edit-umurPR" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-800">Status / Action ✏️</label>
+                    <select id="edit-statusAction" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-purple-500 font-semibold">
+                        <option value="ON PROCESS">⏳ ON PROCESS</option>
+                        <option value="FOLLOW UP">⚠️ FOLLOW UP</option>
+                        <option value="CLOSE">✅ CLOSE</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-800">Keterangan ✏️</label>
+                <textarea id="edit-keterangan" rows="2" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-purple-500"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-lg text-sm">Batal</button>
+                <button onclick="submitUpdatePR()" id="btn-save-edit" class="px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white font-semibold rounded-lg text-sm">Simpan Perubahan</button>
+            </div>
         </div>
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec?sheet=PURCHASING REQUEST (PR)";
+        const API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec";
 
         function formatDate(value) {
             if (!value) return "-";
@@ -53,19 +157,19 @@
             return value;
         }
 
-        function loadData() {
-            const tableBody = document.getElementById("table-body");
-            tableBody.innerHTML = `<tr><td class="p-8 text-center text-slate-500">Memuat data...</td></tr>`;
+        let fullPRData = [];
 
-            fetch(API_URL)
+        function loadData() {
+            fetch(`${API_URL}?sheet=PURCHASING REQUEST (PR)`)
                 .then(res => res.json())
                 .then(data => {
+                    fullPRData = data;
                     let html = "";
                     data.forEach((row, index) => {
                         if (index === 3) {
                             html += `<tr class="bg-slate-900 text-white font-bold">`;
-                            row.forEach(cell => { html += `<td class="p-3 border-slate-800">${cell}</td>`; });
-                            html += `</tr>`;
+                            row.forEach(cell => { html += `<td class="p-2.5 border-slate-800">${cell}</td>`; });
+                            html += `<td class="p-2.5 border-slate-800 text-center">AKSI</td></tr>`;
                             return;
                         }
 
@@ -79,20 +183,107 @@
                             if (cellIdx === 7) {
                                 const statusText = cellVal.toString().toUpperCase();
                                 if (statusText.includes("FOLLOW UP")) {
-                                    cellVal = `<span class="px-2.5 py-1 bg-red-100 text-red-800 font-bold rounded-full text-xs">⚠️ ${cellVal}</span>`;
+                                    cellVal = `<span class="px-2 py-0.5 bg-red-100 text-red-800 font-bold rounded-full text-xs">⚠️ ${cellVal}</span>`;
                                 } else if (statusText.includes("CLOSE")) {
-                                    cellVal = `<span class="px-2.5 py-1 bg-green-100 text-green-800 font-bold rounded-full text-xs">✅ ${cellVal}</span>`;
+                                    cellVal = `<span class="px-2 py-0.5 bg-green-100 text-green-800 font-bold rounded-full text-xs">✅ ${cellVal}</span>`;
                                 } else if (statusText.includes("ON PROCESS")) {
-                                    cellVal = `<span class="px-2.5 py-1 bg-amber-100 text-amber-800 font-bold rounded-full text-xs">⏳ ${cellVal}</span>`;
+                                    cellVal = `<span class="px-2 py-0.5 bg-amber-100 text-amber-800 font-bold rounded-full text-xs">⏳ ${cellVal}</span>`;
                                 }
                             }
-                            html += `<td class="p-3 border-slate-200">${cellVal}</td>`;
+                            html += `<td class="p-2.5 border-slate-200">${cellVal}</td>`;
                         });
-                        html += `</tr>`;
+
+                        html += `
+                            <td class="p-2.5 border-slate-200 text-center">
+                                <button onclick="openModalEdit('${row[0]}')" class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded text-xs">
+                                    ✏️ Edit
+                                </button>
+                            </td>
+                        </tr>`;
                     });
-                    tableBody.innerHTML = html;
+                    document.getElementById("table-body").innerHTML = html;
                 });
         }
+
+        function openModalEdit(noPR) {
+            const rowData = fullPRData.find(r => r[0] && r[0].toString().trim() === noPR.toString().trim());
+            if (!rowData) return;
+
+            // 1. DILOCK / TIDAK BISA DIEDIT
+            document.getElementById("edit-noPR").value = rowData[0];
+            document.getElementById("edit-namaBarang").value = rowData[1];
+            document.getElementById("edit-tanggalPR").value = formatDate(rowData[2]);
+            document.getElementById("edit-qtyPR").value = rowData[3];
+
+            // 2. BISA DIEDIT
+            document.getElementById("edit-qtyDatang").value = rowData[5] !== undefined ? rowData[5] : "";
+            document.getElementById("edit-umurPR").value = rowData[6] !== undefined ? rowData[6] : "";
+            document.getElementById("edit-statusAction").value = rowData[7] ? rowData[7].toString().trim().toUpperCase() : "ON PROCESS";
+            document.getElementById("edit-keterangan").value = rowData[8] || "";
+
+            document.getElementById("modal-edit").classList.remove("hidden");
+        }
+
+        function closeModal() {
+            document.getElementById("modal-edit").classList.add("hidden");
+        }
+
+        function submitUpdatePR() {
+            const btn = document.getElementById("btn-save-edit");
+            btn.innerText = "Menyimpan...";
+            btn.disabled = true;
+
+            const payload = {
+                sheetName: "PURCHASING REQUEST (PR)",
+                actionType: "updatePR",
+                noPR: document.getElementById("edit-noPR").value,
+                tanggalDatang: document.getElementById("edit-tanggalDatang").value,
+                qtyDatang: document.getElementById("edit-qtyDatang").value,
+                umurPR: document.getElementById("edit-umurPR").value,
+                statusAction: document.getElementById("edit-statusAction").value,
+                keterangan: document.getElementById("edit-keterangan").value
+            };
+
+            fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(res => {
+                alert(res.message);
+                closeModal();
+                btn.innerText = "Simpan Perubahan";
+                btn.disabled = false;
+                loadData();
+            });
+        }
+
+        document.getElementById("form-pr").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const btn = document.getElementById("btn-submit-pr");
+            btn.innerText = "Menyimpan...";
+            btn.disabled = true;
+
+            const payload = {
+                sheetName: "PURCHASING REQUEST (PR)",
+                actionType: "insertPR",
+                noPR: document.getElementById("noPR").value,
+                namaBarang: document.getElementById("namaBarang").value,
+                tanggalPR: document.getElementById("tanggalPR").value,
+                qtyPR: document.getElementById("qtyPR").value,
+                keterangan: document.getElementById("keterangan").value
+            };
+
+            fetch(API_URL, { method: "POST", body: JSON.stringify(payload) })
+            .then(res => res.json())
+            .then(res => {
+                alert(res.message);
+                document.getElementById("form-pr").reset();
+                btn.innerText = "Simpan PR Baru";
+                btn.disabled = false;
+                loadData();
+            });
+        });
 
         loadData();
     </script>
