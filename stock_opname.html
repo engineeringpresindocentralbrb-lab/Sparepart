@@ -7,7 +7,30 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 min-h-screen">
-    <!-- Navbar Navigation -->
+
+    <!-- MODAL GATE PASSWORD -->
+    <div id="password-gate" class="fixed inset-0 bg-slate-900 bg-opacity-90 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4">
+            <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
+                🔒
+            </div>
+            <h2 class="text-xl font-bold text-slate-800">Akses Terkunci</h2>
+            <p class="text-xs text-slate-500">Masukkan kata sandi khusus untuk mengakses halaman Stock Opname.</p>
+            
+            <div>
+                <input type="password" id="input-password" placeholder="Masukkan Password" 
+                    class="w-full text-center text-lg p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <p id="error-msg" class="text-xs text-red-500 mt-2 font-semibold hidden">⚠️ Password salah! Akses ditolak.</p>
+            </div>
+
+            <div class="flex gap-2">
+                <a href="index.html" class="w-1/2 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-lg text-sm transition text-center flex items-center justify-center">Batal</a>
+                <button onclick="checkPassword()" class="w-1/2 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm transition">Masuk</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Navigation -->
     <nav class="bg-slate-900 text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="text-xl font-bold flex items-center gap-2">📦 System Monitoring Stok</h1>
@@ -80,11 +103,53 @@
     </div>
 
     <script>
+        const HASH_PASSWORD_BENAR = "6c878693197d99d54d289ae5a8147fe4e77f94d9df5b5cdc7a0fd9f674165db7";
         const API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec";
+
+        // Ubah teks biasa ke SHA-256
+        async function sha256(str) {
+            const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Cek Sesi Akses yang Sudah Login
+        function checkAuth() {
+            if (sessionStorage.getItem("so_authenticated") === "true") {
+                document.getElementById("password-gate").classList.add("hidden");
+                loadSpareparts();
+                loadSOData();
+            }
+        }
+
+        // Verifikasi Password
+        async function checkPassword() {
+            const inputPass = document.getElementById("input-password").value;
+            const errorMsg = document.getElementById("error-msg");
+            const inputHash = await sha256(inputPass);
+
+            if (inputHash === HASH_PASSWORD_BENAR) {
+                sessionStorage.setItem("so_authenticated", "true");
+                document.getElementById("password-gate").classList.add("hidden");
+                errorMsg.classList.add("hidden");
+                loadSpareparts();
+                loadSOData();
+            } else {
+                errorMsg.classList.remove("hidden");
+                document.getElementById("input-password").value = "";
+            }
+        }
+
+        // Tekan Enter untuk Login
+        document.getElementById("input-password").addEventListener("keyup", function(e) {
+            if (e.key === "Enter") {
+                checkPassword();
+            }
+        });
 
         // Set Default Tanggal Hari Ini
         document.getElementById("tanggal").value = new Date().toISOString().split('T')[0];
 
+        // Format Tanggal Display
         function formatDate(value) {
             if (!value) return "-";
             if (typeof value === "string" && value.includes("T")) {
@@ -99,7 +164,7 @@
             return value;
         }
 
-        // Load Opsi Sparepart
+        // Fetch Opsi Sparepart
         function loadSpareparts() {
             fetch(`${API_URL}?action=getSpareparts`)
                 .then(res => res.json())
@@ -112,7 +177,7 @@
                 });
         }
 
-        // Load Riwayat SO
+        // Fetch Riwayat SO
         function loadSOData() {
             fetch(`${API_URL}?sheet=STOCK OPNAME`)
                 .then(res => res.json())
@@ -122,7 +187,7 @@
                         html = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Belum ada riwayat Stock Opname.</td></tr>`;
                     } else {
                         data.forEach((row, index) => {
-                            if (index === 0) return; // Skip Header
+                            if (index === 0) return;
                             if (!row[0] && !row[1]) return;
 
                             html += `
@@ -139,7 +204,7 @@
                 });
         }
 
-        // Submit Form SO
+        // Handler Submit Form SO
         document.getElementById("form-so").addEventListener("submit", function(e) {
             e.preventDefault();
             const btn = document.getElementById("btn-submit");
@@ -171,8 +236,8 @@
             });
         });
 
-        loadSpareparts();
-        loadSOData();
+        // Jalankan Pengecekan Akses Otomatis
+        checkAuth();
     </script>
 </body>
 </html>
