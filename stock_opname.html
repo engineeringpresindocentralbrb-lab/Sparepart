@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Opname (SO)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen">
+    <!-- Navbar Navigation -->
+    <nav class="bg-slate-900 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold flex items-center gap-2">📦 System Monitoring Stok</h1>
+            <div class="flex gap-2">
+                <a href="index.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Home</a>
+                <a href="data_stok.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Data Stok</a>
+                <a href="barang_masuk.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Barang Masuk</a>
+                <a href="barang_keluar.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Barang Keluar</a>
+                <a href="purchasing_request.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">PR Tracking</a>
+                <a href="stock_opname.html" class="px-3 py-2 bg-blue-600 rounded-lg text-sm font-semibold">Stock Opname</a>
+                <a href="rekap_pr.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Rekap Perlu PR</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto py-8 px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- FORM INPUT STOCK OPNAME -->
+        <div class="bg-white p-6 rounded-xl shadow border border-slate-200">
+            <h2 class="text-xl font-bold text-slate-800 mb-2">📋 Form Stock Opname</h2>
+            <p class="text-xs text-amber-700 bg-amber-50 p-2.5 rounded border border-amber-200 mb-4">
+                ⚠️ Nilai Qty SO akan <strong>memotong/membypass stok awal</strong> di DATA STOK sehingga Sisa Stok otomatis menyesuaikan dengan hasil SO fisik terbaru.
+            </p>
+            <form id="form-so" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700">Tanggal SO</label>
+                    <input type="date" id="tanggal" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700">Nama Sparepart</label>
+                    <select id="sparepart" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Memuat Sparepart... --</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700">Qty Hasil SO (Fisik)</label>
+                    <input type="number" id="qtySO" required min="0" placeholder="Jumlah fisik stok di gudang" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700">Keterangan / Alasan SO</label>
+                    <textarea id="keterangan" placeholder="Contoh: Penyesuaian fisik bulanan / Barang rusak" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <button type="submit" id="btn-submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition">
+                    Simpan Stock Opname
+                </button>
+            </form>
+        </div>
+
+        <!-- TABEL RIWAYAT STOCK OPNAME -->
+        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow border border-slate-200">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-slate-800">Riwayat Stock Opname (SO)</h2>
+                <button onclick="loadSOData()" class="bg-slate-800 text-white text-xs px-3 py-1.5 rounded-lg hover:bg-slate-700">🔄 Refresh</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-slate-900 text-white font-bold">
+                            <th class="p-3">Tanggal SO</th>
+                            <th class="p-3">Nama Sparepart</th>
+                            <th class="p-3">Qty SO (Fisik)</th>
+                            <th class="p-3">Keterangan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <tr><td colspan="4" class="p-4 text-center text-slate-500">Memuat riwayat SO...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec";
+
+        // Set Default Tanggal Hari Ini
+        document.getElementById("tanggal").value = new Date().toISOString().split('T')[0];
+
+        function formatDate(value) {
+            if (!value) return "-";
+            if (typeof value === "string" && value.includes("T")) {
+                const date = new Date(value);
+                if (!isNaN(date.getTime())) {
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const year = date.getFullYear();
+                    return `${day}/${month}/${year}`;
+                }
+            }
+            return value;
+        }
+
+        // Load Opsi Sparepart
+        function loadSpareparts() {
+            fetch(`${API_URL}?action=getSpareparts`)
+                .then(res => res.json())
+                .then(list => {
+                    let options = '<option value="">-- Pilih Sparepart --</option>';
+                    list.forEach(sp => {
+                        options += `<option value="${sp}">${sp}</option>`;
+                    });
+                    document.getElementById("sparepart").innerHTML = options;
+                });
+        }
+
+        // Load Riwayat SO
+        function loadSOData() {
+            fetch(`${API_URL}?sheet=STOCK OPNAME`)
+                .then(res => res.json())
+                .then(data => {
+                    let html = "";
+                    if (!data || data.length <= 1) {
+                        html = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Belum ada riwayat Stock Opname.</td></tr>`;
+                    } else {
+                        data.forEach((row, index) => {
+                            if (index === 0) return; // Skip Header
+                            if (!row[0] && !row[1]) return;
+
+                            html += `
+                                <tr class="border-b hover:bg-slate-50">
+                                    <td class="p-3 border-slate-200">${formatDate(row[0])}</td>
+                                    <td class="p-3 border-slate-200 font-medium">${row[1]}</td>
+                                    <td class="p-3 border-slate-200 font-bold text-blue-700">${row[2]}</td>
+                                    <td class="p-3 border-slate-200 text-slate-600">${row[3] || "-"}</td>
+                                </tr>
+                            `;
+                        });
+                    }
+                    document.getElementById("table-body").innerHTML = html;
+                });
+        }
+
+        // Submit Form SO
+        document.getElementById("form-so").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const btn = document.getElementById("btn-submit");
+            btn.innerText = "Menyimpan...";
+            btn.disabled = true;
+
+            const payload = {
+                sheetName: "STOCK OPNAME",
+                tanggal: document.getElementById("tanggal").value,
+                sparepart: document.getElementById("sparepart").value,
+                qtySO: document.getElementById("qtySO").value,
+                keterangan: document.getElementById("keterangan").value
+            };
+
+            fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(res => {
+                alert(res.message);
+                if (res.result === "success") {
+                    document.getElementById("form-so").reset();
+                    document.getElementById("tanggal").value = new Date().toISOString().split('T')[0];
+                    loadSOData();
+                }
+                btn.innerText = "Simpan Stock Opname";
+                btn.disabled = false;
+            });
+        });
+
+        loadSpareparts();
+        loadSOData();
+    </script>
+</body>
+</html>
