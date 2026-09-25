@@ -6,59 +6,152 @@
     <title>Sistem Monitoring Stok & PR</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-100 min-h-screen font-sans">
-    <nav class="bg-slate-900 text-white shadow-md">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold flex items-center gap-2">📦 System Monitoring Stok</h1>
-            <div class="flex gap-2">
-                <a href="index.html" class="px-3 py-2 bg-blue-600 rounded-lg text-sm font-semibold">Home</a>
-                <a href="data_stok.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Data Stok</a>
-                <a href="barang_masuk.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Barang Masuk</a>
-                <a href="barang_keluar.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Barang Keluar</a>
-                <a href="purchasing_request.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">PR Tracking</a>
-                <a href="rekap_pr.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Rekap Perlu PR</a>
-                <a href="stock_opname.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Stock Opname</a>
+<body class="bg-slate-100 min-h-screen font-sans flex flex-col justify-between">
+
+    <!-- NAVBAR RESPONSIF -->
+    <nav class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo / Title -->
+                <h1 class="text-lg sm:text-xl font-bold flex items-center gap-2">
+                    📦 <span class="truncate">System Monitoring Stok</span>
+                </h1>
+
+                <!-- Hamburger Button (Mobile Only) -->
+                <button id="menu-btn" type="button" class="lg:hidden p-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path id="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+
+                <!-- Navigation Links (Desktop) -->
+                <div class="hidden lg:flex items-center gap-1.5 xl:gap-2">
+                    <a href="index.html" class="px-3 py-2 bg-blue-600 rounded-lg text-sm font-semibold transition">Home</a>
+                    <a href="data_stok.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Data Stok</a>
+                    <a href="barang_masuk.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Barang Masuk</a>
+                    <a href="barang_keluar.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Barang Keluar</a>
+                    <a href="purchasing_request.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">PR Tracking</a>
+                    <a href="rekap_pr.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Rekap Perlu PR</a>
+                    <a href="stock_opname.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Stock Opname</a>
+                </div>
             </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-slate-800 border-t border-slate-700 px-4 pt-2 pb-4 space-y-1">
+            <a href="index.html" class="block px-3 py-2.5 bg-blue-600 rounded-lg text-base font-semibold text-white">Home</a>
+            <a href="data_stok.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Data Stok</a>
+            <a href="barang_masuk.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Barang Masuk</a>
+            <a href="barang_keluar.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Barang Keluar</a>
+            <a href="purchasing_request.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">PR Tracking</a>
+            <a href="rekap_pr.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Rekap Perlu PR</a>
+            <a href="stock_opname.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Stock Opname</a>
         </div>
     </nav>
 
-    <div class="max-w-5xl mx-auto py-12 px-4">
-        <div class="text-center mb-10">
-            <h2 class="text-3xl font-bold text-slate-800 mb-2">Dashboard System Monitoring Stok</h2>
-            <p class="text-slate-600">Pilih modul di bawah ini untuk melihat data atau input transaksi per bagian.</p>
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-7xl mx-auto py-8 sm:py-12 px-4 sm:px-6 lg:px-8 flex-grow">
+        <!-- Header Title -->
+        <div class="text-center mb-8 sm:mb-12">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-800 tracking-tight">
+                Dashboard System Monitoring Stok
+            </h2>
+            <p class="text-sm sm:text-base text-slate-600 mt-2 max-w-2xl mx-auto">
+                Pilih modul di bawah ini untuk melihat data atau menginput transaksi operasional gudang.
+            </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <a href="data_stok.html" class="bg-white p-6 rounded-xl shadow border hover:border-blue-500 transition group">
-                <div class="text-3xl mb-3">📊</div>
-                <h3 class="text-xl font-bold text-slate-800 group-hover:text-blue-600">DATA STOK MASTER</h3>
-                <p class="text-sm text-slate-500 mt-2">Monitoring stok aktual, barang masuk, barang keluar, dan batas minimum.</p>
+        <!-- GRID MODULES (1 col Mobile, 2 cols Tablet, 3 cols Desktop) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            
+            <!-- Card 1: Data Stok -->
+            <a href="data_stok.html" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-200 hover:border-blue-500 transition duration-200 group flex flex-col justify-between active:scale-[0.99]">
+                <div>
+                    <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition duration-200">📊</div>
+                    <h3 class="text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">DATA STOK MASTER</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">Monitoring stok aktual, barang masuk, barang keluar, dan batas minimum secara realtime.</p>
+                </div>
+                <div class="mt-4 flex items-center text-xs font-semibold text-blue-600 group-hover:translate-x-1 transition">
+                    Buka Modul &rarr;
+                </div>
             </a>
 
-            <a href="barang_masuk.html" class="bg-white p-6 rounded-xl shadow border hover:border-green-500 transition group">
-                <div class="text-3xl mb-3">📥</div>
-                <h3 class="text-xl font-bold text-slate-800 group-hover:text-green-600">BARANG MASUK</h3>
-                <p class="text-sm text-slate-500 mt-2">Form input dan riwayat pencatatan barang masuk dari supplier.</p>
+            <!-- Card 2: Barang Masuk -->
+            <a href="barang_masuk.html" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-200 hover:border-emerald-500 transition duration-200 group flex flex-col justify-between active:scale-[0.99]">
+                <div>
+                    <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition duration-200">📥</div>
+                    <h3 class="text-lg font-bold text-slate-800 group-hover:text-emerald-600 transition">BARANG MASUK</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">Form input penerimaan dan riwayat pencatatan barang masuk dari supplier.</p>
+                </div>
+                <div class="mt-4 flex items-center text-xs font-semibold text-emerald-600 group-hover:translate-x-1 transition">
+                    Buka Modul &rarr;
+                </div>
             </a>
 
-            <a href="barang_keluar.html" class="bg-white p-6 rounded-xl shadow border hover:border-amber-500 transition group">
-                <div class="text-3xl mb-3">📤</div>
-                <h3 class="text-xl font-bold text-slate-800 group-hover:text-amber-600">BARANG KELUAR</h3>
-                <p class="text-sm text-slate-500 mt-2">Form input dan riwayat pemakaian sparepart mesin.</p>
+            <!-- Card 3: Barang Keluar -->
+            <a href="barang_keluar.html" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-200 hover:border-amber-500 transition duration-200 group flex flex-col justify-between active:scale-[0.99]">
+                <div>
+                    <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition duration-200">📤</div>
+                    <h3 class="text-lg font-bold text-slate-800 group-hover:text-amber-600 transition">BARANG KELUAR</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">Form input dan riwayat pencatatan pemakaian sparepart mesin operasional.</p>
+                </div>
+                <div class="mt-4 flex items-center text-xs font-semibold text-amber-600 group-hover:translate-x-1 transition">
+                    Buka Modul &rarr;
+                </div>
             </a>
 
-            <a href="purchasing_request.html" class="bg-white p-6 rounded-xl shadow border hover:border-purple-500 transition group">
-                <div class="text-3xl mb-3">📋</div>
-                <h3 class="text-xl font-bold text-slate-800 group-hover:text-purple-600">PURCHASING REQUEST</h3>
-                <p class="text-sm text-slate-500 mt-2">Monitoring status pengajuan PR dan peringatan follow-up 30 hari.</p>
+            <!-- Card 4: Purchasing Request -->
+            <a href="purchasing_request.html" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-200 hover:border-purple-500 transition duration-200 group flex flex-col justify-between active:scale-[0.99]">
+                <div>
+                    <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition duration-200">📋</div>
+                    <h3 class="text-lg font-bold text-slate-800 group-hover:text-purple-600 transition">PURCHASING REQUEST</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">Monitoring status pengajuan PR dan peringatan follow-up transaksi 30 hari.</p>
+                </div>
+                <div class="mt-4 flex items-center text-xs font-semibold text-purple-600 group-hover:translate-x-1 transition">
+                    Buka Modul &rarr;
+                </div>
             </a>
 
-            <a href="rekap_pr.html" class="bg-white p-6 rounded-xl shadow border hover:border-red-500 transition group">
-                <div class="text-3xl mb-3">⚠️</div>
-                <h3 class="text-xl font-bold text-slate-800 group-hover:text-red-600">REKAP PERLU PR</h3>
-                <p class="text-sm text-slate-500 mt-2">Daftar tersusun rapat khusus barang yang stoknya di bawah batas minimal.</p>
+            <!-- Card 5: Rekap Perlu PR -->
+            <a href="rekap_pr.html" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-200 hover:border-rose-500 transition duration-200 group flex flex-col justify-between active:scale-[0.99]">
+                <div>
+                    <div class="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition duration-200">⚠️</div>
+                    <h3 class="text-lg font-bold text-slate-800 group-hover:text-rose-600 transition">REKAP PERLU PR</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">Daftar ringkas khusus sparepart dengan jumlah stok di bawah batas minimal.</p>
+                </div>
+                <div class="mt-4 flex items-center text-xs font-semibold text-rose-600 group-hover:translate-x-1 transition">
+                    Buka Modul &rarr;
+                </div>
             </a>
+
+            <!-- Card 6: Stock Opname (Ditambahkan agar grid genap 6) -->
+            <a href="stock_opname.html" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-200 hover:border-indigo-500 transition duration-200 group flex flex-col justify-between active:scale-[0.99]">
+                <div>
+                    <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition duration-200">🔍</div>
+                    <h3 class="text-lg font-bold text-slate-800 group-hover:text-indigo-600 transition">STOCK OPNAME</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">Penyesuaian dan pencatatan fisik stok gudang dengan proteksi kata sandi.</p>
+                </div>
+                <div class="mt-4 flex items-center text-xs font-semibold text-indigo-600 group-hover:translate-x-1 transition">
+                    Buka Modul &rarr;
+                </div>
+            </a>
+
         </div>
-    </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        &copy; System Monitoring Stok & PR — All rights reserved.
+    </footer>
+
+    <!-- JAVASCRIPT UNTUK TOGGLE MOBILE MENU -->
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
 </body>
 </html>
