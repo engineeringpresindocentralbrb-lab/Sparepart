@@ -5,6 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Opname (SO)</title>
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Library Searchable Select (Tom Select) -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+    <style>
+        /* Penyesuaian Style Dropdown agar serasi dengan Tailwind */
+        .ts-control {
+            border-radius: 0.5rem !important;
+            padding: 0.6rem 0.75rem !important;
+            border-color: #cbd5e1 !important;
+            font-size: 0.875rem !important;
+        }
+        .ts-wrapper.focus .ts-control {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+        }
+        .ts-dropdown {
+            border-radius: 0.5rem !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+            z-index: 40 !important;
+        }
+    </style>
 </head>
 <body class="bg-slate-100 min-h-screen">
 
@@ -59,8 +81,9 @@
                     <input type="date" id="tanggal" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700">Nama Sparepart</label>
-                    <select id="sparepart" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Sparepart</label>
+                    <!-- Select berfitur cari (Searchable Dropdown) -->
+                    <select id="sparepart" required placeholder="Ketik kata kunci atau pilih sparepart...">
                         <option value="">-- Memuat Sparepart... --</option>
                     </select>
                 </div>
@@ -105,6 +128,7 @@
     <script>
         const HASH_PASSWORD_BENAR = "6c878693197d99d54d289ae5a8147fe4e77f94d9df5b5cdc7a0fd9f674165db7";
         const API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec";
+        let tomSelectInstance = null;
 
         // Ubah teks biasa ke SHA-256
         async function sha256(str) {
@@ -164,16 +188,57 @@
             return value;
         }
 
-        // Fetch Opsi Sparepart
+        // Fetch & Bersihkan Opsi Sparepart
         function loadSpareparts() {
             fetch(`${API_URL}?action=getSpareparts`)
                 .then(res => res.json())
                 .then(list => {
-                    let options = '<option value="">-- Pilih Sparepart --</option>';
+                    const selectEl = document.getElementById("sparepart");
+                    selectEl.innerHTML = '<option value="">-- Ketik/Pilih Sparepart --</option>';
+
+                    let items = [];
+
                     list.forEach(sp => {
-                        options += `<option value="${sp}">${sp}</option>`;
+                        let cleanName = sp;
+
+                        // Pembersihan otomatis jika baris spreadsheet terkirim dalam bentuk string CSV
+                        if (typeof sp === 'string' && sp.includes(',')) {
+                            const parts = sp.split(',');
+                            cleanName = parts[1] ? parts[1].trim() : sp;
+                        }
+
+                        // Filter hanya nama sparepart valid (bukan header atau string instruksi)
+                        if (cleanName && 
+                            typeof cleanName === 'string' &&
+                            !cleanName.includes("NAMA SPAREPART") && 
+                            !cleanName.includes("SYSTEM MONITORING") && 
+                            !cleanName.includes("Daftar kontrol") &&
+                            isNaN(cleanName)) {
+                            
+                            cleanName = cleanName.trim();
+                            if (!items.includes(cleanName)) {
+                                items.push(cleanName);
+                            }
+                        }
                     });
-                    document.getElementById("sparepart").innerHTML = options;
+
+                    // Tambahkan item yang bersih ke dalam select
+                    items.forEach(item => {
+                        const opt = document.createElement("option");
+                        opt.value = item;
+                        opt.textContent = item;
+                        selectEl.appendChild(opt);
+                    });
+
+                    // Inisialisasi TomSelect untuk Pencarian & Dropdown
+                    if (tomSelectInstance) {
+                        tomSelectInstance.destroy();
+                    }
+                    tomSelectInstance = new TomSelect("#sparepart", {
+                        create: false,
+                        maxOptions: null, // Menampilkan seluruh opsi dalam scroll
+                        sortField: { field: "text", direction: "asc" } // Mengurutkan A-Z
+                    });
                 });
         }
 
@@ -228,6 +293,7 @@
                 alert(res.message);
                 if (res.result === "success") {
                     document.getElementById("form-so").reset();
+                    if (tomSelectInstance) tomSelectInstance.clear();
                     document.getElementById("tanggal").value = new Date().toISOString().split('T')[0];
                     loadSOData();
                 }
