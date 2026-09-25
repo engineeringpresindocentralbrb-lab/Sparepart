@@ -7,12 +7,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 min-h-screen font-sans">
-    <!-- Header Navigation -->
     <nav class="bg-slate-900 text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="text-xl font-bold flex items-center gap-2">📦 System Monitoring Stok</h1>
             <div class="flex gap-2">
-                <a href="index.html" class="px-3 py-2 bg-blue-600 rounded-lg text-sm font-semibold">Home (Index)</a>
+                <a href="index.html" class="px-3 py-2 bg-blue-600 rounded-lg text-sm font-semibold">Home</a>
                 <a href="data_stok.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Data Stok</a>
                 <a href="barang_masuk.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Barang Masuk</a>
                 <a href="barang_keluar.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Barang Keluar</a>
@@ -22,36 +21,35 @@
         </div>
     </nav>
 
-    <!-- Tombol Menu Utama -->
     <div class="max-w-5xl mx-auto py-12 px-4">
         <div class="text-center mb-10">
-            <h2 class="text-3xl font-bold text-slate-800 mb-2">Pilih Modul Halaman</h2>
-            <p class="text-slate-600">Klik tombol di bawah ini untuk melihat data dari masing-masing sheet.</p>
+            <h2 class="text-3xl font-bold text-slate-800 mb-2">Dashboard System Monitoring Stok</h2>
+            <p class="text-slate-600">Pilih modul di bawah ini untuk melihat data atau input transaksi per bagian.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <a href="data_stok.html" class="bg-white p-6 rounded-xl shadow border hover:border-blue-500 transition group">
                 <div class="text-3xl mb-3">📊</div>
                 <h3 class="text-xl font-bold text-slate-800 group-hover:text-blue-600">DATA STOK MASTER</h3>
-                <p class="text-sm text-slate-500 mt-2">Daftar kontrol persediaan stok aktual, batas minimal, dan status re-order.</p>
+                <p class="text-sm text-slate-500 mt-2">Monitoring stok aktual, barang masuk, barang keluar, dan batas minimum.</p>
             </a>
 
             <a href="barang_masuk.html" class="bg-white p-6 rounded-xl shadow border hover:border-green-500 transition group">
                 <div class="text-3xl mb-3">📥</div>
                 <h3 class="text-xl font-bold text-slate-800 group-hover:text-green-600">BARANG MASUK</h3>
-                <p class="text-sm text-slate-500 mt-2">Riwayat pencatatan barang masuk dari supplier atau purchasing.</p>
+                <p class="text-sm text-slate-500 mt-2">Form input dan riwayat pencatatan barang masuk dari supplier.</p>
             </a>
 
             <a href="barang_keluar.html" class="bg-white p-6 rounded-xl shadow border hover:border-amber-500 transition group">
                 <div class="text-3xl mb-3">📤</div>
                 <h3 class="text-xl font-bold text-slate-800 group-hover:text-amber-600">BARANG KELUAR</h3>
-                <p class="text-sm text-slate-500 mt-2">Riwayat pemakaian sparepart untuk pemeliharaan dan perbaikan mesin.</p>
+                <p class="text-sm text-slate-500 mt-2">Form input dan riwayat pemakaian sparepart mesin.</p>
             </a>
 
             <a href="purchasing_request.html" class="bg-white p-6 rounded-xl shadow border hover:border-purple-500 transition group">
                 <div class="text-3xl mb-3">📋</div>
                 <h3 class="text-xl font-bold text-slate-800 group-hover:text-purple-600">PURCHASING REQUEST</h3>
-                <p class="text-sm text-slate-500 mt-2">Monitoring status pengajuan PR dan indikator peringatan follow-up 30 hari.</p>
+                <p class="text-sm text-slate-500 mt-2">Monitoring status pengajuan PR dan peringatan follow-up 30 hari.</p>
             </a>
 
             <a href="rekap_pr.html" class="bg-white p-6 rounded-xl shadow border hover:border-red-500 transition group">

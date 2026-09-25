@@ -7,10 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 min-h-screen">
-    <!-- Header Navigation -->
     <nav class="bg-slate-900 text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold flex items-center gap-2">📦 System Monitoring Stok</h1>
+            <h1 class="text-xl font-bold">📦 System Monitoring Stok</h1>
             <div class="flex gap-2">
                 <a href="index.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Home</a>
                 <a href="data_stok.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Data Stok</a>
@@ -24,18 +23,14 @@
 
     <div class="max-w-7xl mx-auto py-8 px-4">
         <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                📋 Laporan Purchasing Request (PR) & Follow-Up Tracking
-            </h2>
-            <button onclick="loadData()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-3 py-2 rounded-lg flex items-center gap-1 transition">
-                🔄 Refresh Data
-            </button>
+            <h2 class="text-2xl font-bold text-slate-800">📋 Laporan Purchasing Request (PR) Tracking</h2>
+            <button onclick="loadData()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-3 py-2 rounded-lg">🔄 Refresh</button>
         </div>
 
         <div class="bg-white rounded-lg shadow overflow-x-auto p-4 border border-slate-200">
             <table class="w-full text-left border-collapse text-sm">
                 <tbody id="table-body">
-                    <tr><td class="p-8 text-center text-slate-500">Memuat data Purchasing Request...</td></tr>
+                    <tr><td class="p-8 text-center text-slate-500">Memuat data PR...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -44,7 +39,6 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec?sheet=PURCHASING REQUEST (PR)";
 
-        // Fungsi Format Tanggal dari ISO ke DD/MM/YYYY
         function formatDate(value) {
             if (!value) return "-";
             if (typeof value === "string" && value.includes("T")) {
@@ -61,65 +55,42 @@
 
         function loadData() {
             const tableBody = document.getElementById("table-body");
-            tableBody.innerHTML = `<tr><td class="p-8 text-center text-slate-500">Memuat data Purchasing Request...</td></tr>`;
+            tableBody.innerHTML = `<tr><td class="p-8 text-center text-slate-500">Memuat data...</td></tr>`;
 
             fetch(API_URL)
                 .then(res => res.json())
                 .then(data => {
                     let html = "";
-                    let totalPR = 0;
-
                     data.forEach((row, index) => {
-                        // Header Tabel (Baris ke-4 / indeks 3)
                         if (index === 3) {
                             html += `<tr class="bg-slate-900 text-white font-bold">`;
-                            row.forEach(cell => {
-                                html += `<td class="p-3 border-slate-800">${cell}</td>`;
-                            });
+                            row.forEach(cell => { html += `<td class="p-3 border-slate-800">${cell}</td>`; });
                             html += `</tr>`;
                             return;
                         }
 
-                        // Lewati baris judul atas & baris kosong
                         if (index < 3 || !row[0] || row[0].toString().trim() === "") return;
 
-                        totalPR++;
-                        html += `<tr class="border-b hover:bg-slate-50 transition">`;
-
+                        html += `<tr class="border-b hover:bg-slate-50">`;
                         row.forEach((cell, cellIdx) => {
                             let cellVal = (cell !== undefined && cell !== null && cell !== "") ? cell : "-";
+                            if (cellIdx === 2 || cellIdx === 4) cellVal = formatDate(cellVal);
 
-                            // Format Kolom Tanggal PR (Indeks 2) dan Tanggal Datang (Indeks 4)
-                            if (cellIdx === 2 || cellIdx === 4) {
-                                cellVal = formatDate(cellVal);
-                            }
-
-                            // Format Pewarnaan Khusus untuk Kolom STATUS / ACTION (Indeks 7)
                             if (cellIdx === 7) {
                                 const statusText = cellVal.toString().toUpperCase();
                                 if (statusText.includes("FOLLOW UP")) {
-                                    cellVal = `<span class="px-2.5 py-1 bg-red-100 text-red-800 border border-red-300 font-bold rounded-full text-xs">⚠️ ${cellVal}</span>`;
+                                    cellVal = `<span class="px-2.5 py-1 bg-red-100 text-red-800 font-bold rounded-full text-xs">⚠️ ${cellVal}</span>`;
                                 } else if (statusText.includes("CLOSE")) {
-                                    cellVal = `<span class="px-2.5 py-1 bg-green-100 text-green-800 border border-green-300 font-bold rounded-full text-xs">✅ ${cellVal}</span>`;
+                                    cellVal = `<span class="px-2.5 py-1 bg-green-100 text-green-800 font-bold rounded-full text-xs">✅ ${cellVal}</span>`;
                                 } else if (statusText.includes("ON PROCESS")) {
-                                    cellVal = `<span class="px-2.5 py-1 bg-amber-100 text-amber-800 border border-amber-300 font-bold rounded-full text-xs">⏳ ${cellVal}</span>`;
+                                    cellVal = `<span class="px-2.5 py-1 bg-amber-100 text-amber-800 font-bold rounded-full text-xs">⏳ ${cellVal}</span>`;
                                 }
                             }
-
                             html += `<td class="p-3 border-slate-200">${cellVal}</td>`;
                         });
-
                         html += `</tr>`;
                     });
-
-                    if (totalPR === 0) {
-                        tableBody.innerHTML = `<tr><td class="p-6 text-center text-slate-500 font-semibold">Belum ada riwayat pengajuan Purchasing Request (PR).</td></tr>`;
-                    } else {
-                        tableBody.innerHTML = html;
-                    }
-                })
-                .catch(err => {
-                    tableBody.innerHTML = `<tr><td class="p-4 text-center text-red-600 font-bold">Gagal memuat data: ${err.message}</td></tr>`;
+                    tableBody.innerHTML = html;
                 });
         }
 

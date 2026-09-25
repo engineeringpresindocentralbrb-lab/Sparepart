@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barang Masuk - Input & Transaksi</title>
+    <title>Barang Masuk</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 min-h-screen">
@@ -58,6 +58,20 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec";
 
+        function formatDate(value) {
+            if (!value) return "-";
+            if (typeof value === "string" && value.includes("T")) {
+                const date = new Date(value);
+                if (!isNaN(date.getTime())) {
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const year = date.getFullYear();
+                    return `${day}/${month}/${year}`;
+                }
+            }
+            return value;
+        }
+
         function loadData() {
             fetch(`${API_URL}?sheet=BARANG MASUK`)
                 .then(res => res.json())
@@ -66,7 +80,11 @@
                     data.forEach((row, index) => {
                         if (index < 3) return;
                         html += `<tr class="${index === 3 ? 'bg-slate-800 text-white font-bold' : 'border-b hover:bg-slate-50'}">`;
-                        row.forEach(cell => { html += `<td class="p-3 border-slate-200">${cell}</td>`; });
+                        row.forEach((cell, cellIdx) => {
+                            let cellVal = (cell !== undefined && cell !== null) ? cell : '';
+                            if (cellIdx === 0 && index > 3) cellVal = formatDate(cellVal);
+                            html += `<td class="p-3 border-slate-200">${cellVal}</td>`;
+                        });
                         html += `</tr>`;
                     });
                     document.getElementById("table-body").innerHTML = html;

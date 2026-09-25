@@ -7,12 +7,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 min-h-screen">
-    <!-- Header Navigasi -->
     <nav class="bg-slate-900 text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="text-xl font-bold">📦 System Monitoring Stok</h1>
             <div class="flex gap-2">
-                <a href="index.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Home (Index)</a>
+                <a href="index.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Home</a>
                 <a href="data_stok.html" class="px-3 py-2 bg-blue-600 rounded-lg text-sm font-semibold">Data Stok</a>
                 <a href="barang_masuk.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Barang Masuk</a>
                 <a href="barang_keluar.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Barang Keluar</a>
@@ -22,36 +21,70 @@
         </div>
     </nav>
 
-    <!-- Konten Tabel DATA STOK -->
     <div class="max-w-7xl mx-auto py-8 px-4">
-        <h2 class="text-2xl font-bold text-slate-800 mb-4">Laporan Data Stok Master</h2>
-        <div class="bg-white rounded-lg shadow overflow-x-auto p-4">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-slate-800">📊 Laporan Data Stok Master</h2>
+            <button onclick="loadData()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-3 py-2 rounded-lg transition">🔄 Refresh</button>
+        </div>
+
+        <div id="status-container" class="mb-4 hidden"></div>
+
+        <div class="bg-white rounded-lg shadow overflow-x-auto p-4 border border-slate-200">
             <table class="w-full text-left border-collapse text-sm">
                 <tbody id="table-body">
-                    <tr><td class="p-4 text-center">Memuat data dari Google Sheets...</td></tr>
+                    <tr><td class="p-8 text-center text-slate-500">Memuat data dari Google Sheets...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
     <script>
-        // Masukkan URL Google Apps Script Anda
-        const API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec?sheet=DATA STOK";
 
-        fetch(API_URL)
-            .then(res => res.json())
-            .then(data => {
-                let html = "";
-                data.forEach((row, index) => {
-                    if (index < 3) return; // Skip title headers
-                    html += `<tr class="${index === 3 ? 'bg-slate-800 text-white font-bold' : 'border-b hover:bg-slate-50'}">`;
-                    row.forEach(cell => {
-                        html += `<td class="p-3 border-slate-200">${cell}</td>`;
+        function loadData() {
+            const tableBody = document.getElementById("table-body");
+            const statusContainer = document.getElementById("status-container");
+            statusContainer.classList.add("hidden");
+            tableBody.innerHTML = `<tr><td class="p-8 text-center text-slate-500">Memuat data dari Google Sheets...</td></tr>`;
+
+            fetch(API_URL)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.result === "error") {
+                        tableBody.innerHTML = `<tr><td class="p-4 text-center text-red-600 font-bold">${data.message}</td></tr>`;
+                        return;
+                    }
+
+                    let html = "";
+                    data.forEach((row, index) => {
+                        if (index < 3) return;
+                        const isHeader = (index === 3);
+                        html += `<tr class="${isHeader ? 'bg-slate-800 text-white font-bold' : 'border-b hover:bg-slate-50'}">`;
+                        row.forEach((cell, cellIdx) => {
+                            let val = (cell !== undefined && cell !== null) ? cell : '';
+                            if (cellIdx === 8 && !isHeader) {
+                                if (val.toString().includes("PERLU PR")) {
+                                    val = `<span class="px-2 py-1 bg-red-100 text-red-700 font-bold rounded text-xs">⚠️ PERLU PR</span>`;
+                                } else {
+                                    val = `<span class="px-2 py-1 bg-green-100 text-green-700 font-bold rounded text-xs">OK</span>`;
+                                }
+                            }
+                            html += `<td class="p-3 border-slate-200">${val}</td>`;
+                        });
+                        html += `</tr>`;
                     });
-                    html += `</tr>`;
+
+                    tableBody.innerHTML = html;
+                    statusContainer.className = "mb-4 p-3 bg-green-100 text-green-800 text-sm rounded-lg";
+                    statusContainer.innerHTML = `✅ Data terhubung langsung & diperbarui (${data.length - 4} barang)`;
+                    statusContainer.classList.remove("hidden");
+                })
+                .catch(err => {
+                    tableBody.innerHTML = `<tr><td class="p-4 text-center text-red-600 font-bold">Gagal memuat data: ${err.message}</td></tr>`;
                 });
-                document.getElementById("table-body").innerHTML = html;
-            });
+        }
+
+        loadData();
     </script>
 </body>
 </html>
