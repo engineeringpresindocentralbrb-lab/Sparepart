@@ -5,28 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Opname (SO)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Library Searchable Select (Tom Select) -->
-    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
-    <style>
-        /* Penyesuaian Style Dropdown agar serasi dengan Tailwind */
-        .ts-control {
-            border-radius: 0.5rem !important;
-            padding: 0.6rem 0.75rem !important;
-            border-color: #cbd5e1 !important;
-            font-size: 0.875rem !important;
-        }
-        .ts-wrapper.focus .ts-control {
-            border-color: #2563eb !important;
-            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
-        }
-        .ts-dropdown {
-            border-radius: 0.5rem !important;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
-            z-index: 40 !important;
-        }
-    </style>
 </head>
 <body class="bg-slate-100 min-h-screen">
 
@@ -78,13 +56,17 @@
             <form id="form-so" class="space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-slate-700">Tanggal SO (Otomatis)</label>
-                    <!-- Input Tanggal Terkunci (readonly & bg-slate-100) -->
                     <input type="date" id="tanggal" required readonly class="w-full mt-1 p-2 border rounded-lg bg-slate-100 text-slate-600 cursor-not-allowed focus:outline-none">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Sparepart</label>
-                    <!-- Select berfitur cari (Searchable Dropdown) -->
-                    <select id="sparepart" required placeholder="Ketik kata kunci atau pilih sparepart...">
+                    
+                    <!-- Input untuk Cari Sparepart di Dropdown -->
+                    <input type="text" id="search-sparepart" oninput="filterDropdown()" placeholder="🔍 Ketik untuk memfilter dropdown..." 
+                        class="w-full mb-2 p-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+                    <!-- Dropdown Select Bawaan Browser -->
+                    <select id="sparepart" required class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-sm">
                         <option value="">-- Memuat Sparepart... --</option>
                     </select>
                 </div>
@@ -129,7 +111,7 @@
     <script>
         const HASH_PASSWORD_BENAR = "6c878693197d99d54d289ae5a8147fe4e77f94d9df5b5cdc7a0fd9f674165db7";
         const API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec";
-        let tomSelectInstance = null;
+        let allSpareparts = []; // Menyimpan master sparepart
 
         // Fungsi Mematenkan Tanggal Hari Ini (Format YYYY-MM-DD Lokal)
         function setTanggalHariIni() {
@@ -198,26 +180,21 @@
             return value;
         }
 
-        // Fetch & Bersihkan Opsi Sparepart
+        // Fetch & Render Opsi Sparepart
         function loadSpareparts() {
             fetch(`${API_URL}?action=getSpareparts`)
                 .then(res => res.json())
                 .then(list => {
-                    const selectEl = document.getElementById("sparepart");
-                    selectEl.innerHTML = '<option value="">-- Ketik/Pilih Sparepart --</option>';
-
-                    let items = [];
+                    allSpareparts = [];
 
                     list.forEach(sp => {
                         let cleanName = sp;
 
-                        // Pembersihan otomatis jika baris spreadsheet terkirim dalam bentuk string CSV
                         if (typeof sp === 'string' && sp.includes(',')) {
                             const parts = sp.split(',');
                             cleanName = parts[1] ? parts[1].trim() : sp;
                         }
 
-                        // Filter hanya nama sparepart valid
                         if (cleanName && 
                             typeof cleanName === 'string' &&
                             !cleanName.includes("NAMA SPAREPART") && 
@@ -226,38 +203,37 @@
                             isNaN(cleanName)) {
                             
                             cleanName = cleanName.trim();
-                            if (!items.includes(cleanName)) {
-                                items.push(cleanName);
+                            if (!allSpareparts.includes(cleanName)) {
+                                allSpareparts.push(cleanName);
                             }
                         }
                     });
 
-                    // Tambahkan item yang bersih ke dalam select
-                    items.forEach(item => {
-                        const opt = document.createElement("option");
-                        opt.value = item;
-                        opt.textContent = item;
-                        selectEl.appendChild(opt);
-                    });
+                    // Urutkan A-Z
+                    allSpareparts.sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}));
 
-                    // Inisialisasi TomSelect dengan Fitur Pencarian Tidak Peka Kapitalisasi (Case-Insensitive)
-                    if (tomSelectInstance) {
-                        tomSelectInstance.destroy();
-                    }
-                    tomSelectInstance = new TomSelect("#sparepart", {
-                        create: false,
-                        maxOptions: null, // Menampilkan seluruh opsi dalam scroll
-                        sortField: { field: "text", direction: "asc" }, // Mengurutkan A-Z
-                        searchField: ['text', 'value'],
-                        // Mengabaikan perbedaan huruf kapital/kecil saat pencarian
-                        score: function(search) {
-                            var score = this.getScoreFunction(search);
-                            return function(item) {
-                                return score(item);
-                            };
-                        }
-                    });
+                    renderSparepartDropdown(allSpareparts);
                 });
+        }
+
+        // Render Opsi ke dalam elemen <select>
+        function renderSparepartDropdown(items) {
+            const selectEl = document.getElementById("sparepart");
+            selectEl.innerHTML = '<option value="">-- Pilih Sparepart --</option>';
+
+            items.forEach(item => {
+                const opt = document.createElement("option");
+                opt.value = item;
+                opt.textContent = item;
+                selectEl.appendChild(opt);
+            });
+        }
+
+        // Filter Dropdown saat pengguna mengetik di kotak pencarian
+        function filterDropdown() {
+            const keyword = document.getElementById("search-sparepart").value.toLowerCase();
+            const filtered = allSpareparts.filter(item => item.toLowerCase().includes(keyword));
+            renderSparepartDropdown(filtered);
         }
 
         // Fetch Riwayat SO
@@ -311,8 +287,9 @@
                 alert(res.message);
                 if (res.result === "success") {
                     document.getElementById("form-so").reset();
-                    if (tomSelectInstance) tomSelectInstance.clear();
-                    setTanggalHariIni(); // Pastikan tanggal tetap terisi tanggal hari ini setelah reset form
+                    document.getElementById("search-sparepart").value = "";
+                    renderSparepartDropdown(allSpareparts);
+                    setTanggalHariIni();
                     loadSOData();
                 }
                 btn.innerText = "Simpan Stock Opname";
