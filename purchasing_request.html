@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchasing Request Tracking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen">
+    <nav class="bg-slate-900 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">📦 System Monitoring Stok</h1>
+            <div class="flex gap-2">
+                <a href="index.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Home</a>
+                <a href="data_stok.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Data Stok</a>
+                <a href="barang_masuk.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Barang Masuk</a>
+                <a href="barang_keluar.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Barang Keluar</a>
+                <a href="purchasing_request.html" class="px-3 py-2 bg-purple-600 rounded-lg text-sm font-semibold">PR Tracking</a>
+                <a href="rekap_pr.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Rekap Perlu PR</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto py-8 px-4">
+        <h2 class="text-2xl font-bold text-slate-800 mb-4">Laporan Purchasing Request (PR) & Follow-Up</h2>
+        <div class="bg-white rounded-lg shadow overflow-x-auto p-4">
+            <table class="w-full text-left border-collapse text-sm">
+                <tbody id="table-body">
+                    <tr><td class="p-4 text-center">Memuat data dari Google Sheets...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec";
+
+        fetch(API_URL)
+            .then(res => res.json())
+            .then(data => {
+                let html = "";
+                data.forEach((row, index) => {
+                    if (index < 3) return;
+                    html += `<tr class="${index === 3 ? 'bg-slate-800 text-white font-bold' : 'border-b hover:bg-slate-50'}">`;
+                    row.forEach(cell => { html += `<td class="p-3 border-slate-200">${cell}</td>`; });
+                    html += `</tr>`;
+                });
+                document.getElementById("table-body").innerHTML = html;
+            });
+    </script>
+</body>
+</html>
