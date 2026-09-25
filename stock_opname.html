@@ -62,7 +62,7 @@
                     <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Sparepart</label>
                     
                     <!-- Input untuk Cari Sparepart di Dropdown -->
-                    <input type="text" id="search-sparepart" oninput="filterDropdown()" placeholder="🔍 Ketik untuk memfilter dropdown..." 
+                    <input type="text" id="search-sparepart" oninput="filterDropdown()" placeholder="🔍 Ketik kata kunci (misal: heater)..." 
                         class="w-full mb-2 p-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
 
                     <!-- Dropdown Select Bawaan Browser -->
@@ -110,10 +110,9 @@
 
     <script>
         const HASH_PASSWORD_BENAR = "6c878693197d99d54d289ae5a8147fe4e77f94d9df5b5cdc7a0fd9f674165db7";
-        const API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec";
-        let allSpareparts = []; // Menyimpan master sparepart
+        const BASE_API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec";
+        let allSpareparts = [];
 
-        // Fungsi Mematenkan Tanggal Hari Ini (Format YYYY-MM-DD Lokal)
         function setTanggalHariIni() {
             const today = new Date();
             const year = today.getFullYear();
@@ -122,22 +121,19 @@
             document.getElementById("tanggal").value = `${year}-${month}-${day}`;
         }
 
-        // Ubah teks biasa ke SHA-256
         async function sha256(str) {
             const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
             return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // Cek Sesi Akses yang Sudah Login
         function checkAuth() {
             if (sessionStorage.getItem("so_authenticated") === "true") {
                 document.getElementById("password-gate").classList.add("hidden");
-                loadSpareparts();
+                loadSparepartsFromMaster();
                 loadSOData();
             }
         }
 
-        // Verifikasi Password
         async function checkPassword() {
             const inputPass = document.getElementById("input-password").value;
             const errorMsg = document.getElementById("error-msg");
@@ -147,7 +143,7 @@
                 sessionStorage.setItem("so_authenticated", "true");
                 document.getElementById("password-gate").classList.add("hidden");
                 errorMsg.classList.add("hidden");
-                loadSpareparts();
+                loadSparepartsFromMaster();
                 loadSOData();
             } else {
                 errorMsg.classList.remove("hidden");
@@ -155,17 +151,14 @@
             }
         }
 
-        // Tekan Enter untuk Login
         document.getElementById("input-password").addEventListener("keyup", function(e) {
             if (e.key === "Enter") {
                 checkPassword();
             }
         });
 
-        // Set Tanggal Paten Saat Halaman Di-load
         setTanggalHariIni();
 
-        // Format Tanggal Display
         function formatDate(value) {
             if (!value) return "-";
             if (typeof value === "string" && value.includes("T")) {
@@ -180,45 +173,48 @@
             return value;
         }
 
-        // Fetch & Render Opsi Sparepart
-        function loadSpareparts() {
-            fetch(`${API_URL}?action=getSpareparts`)
+        // MENGAMBIL SPAREPART SAMA DENGAN HALAMAN DATA STOK
+        function loadSparepartsFromMaster() {
+            fetch(`${BASE_API_URL}?sheet=DATA STOK`)
                 .then(res => res.json())
-                .then(list => {
+                .then(data => {
                     allSpareparts = [];
-
-                    list.forEach(sp => {
-                        let cleanName = sp;
-
-                        if (typeof sp === 'string' && sp.includes(',')) {
-                            const parts = sp.split(',');
-                            cleanName = parts[1] ? parts[1].trim() : sp;
-                        }
-
-                        if (cleanName && 
-                            typeof cleanName === 'string' &&
-                            !cleanName.includes("NAMA SPAREPART") && 
-                            !cleanName.includes("SYSTEM MONITORING") && 
-                            !cleanName.includes("Daftar kontrol") &&
-                            isNaN(cleanName)) {
+                    
+                    if (Array.isArray(data)) {
+                        data.forEach((row, index) => {
+                            // Abaikan header awal (3 baris pertama)
+                            if (index < 4) return;
                             
-                            cleanName = cleanName.trim();
-                            if (!allSpareparts.includes(cleanName)) {
-                                allSpareparts.push(cleanName);
+                            // Nama sparepart berada pada kolom ke-2 (indeks 1)
+                            let nama = row[1];
+                            if (nama && typeof nama === 'string') {
+                                nama = nama.trim();
+                                if (nama !== "" && !allSpareparts.includes(nama)) {
+                                    allSpareparts.push(nama);
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
 
-                    // Urutkan A-Z
+                    // Urutkan Nama A-Z secara acak kapitalisasi
                     allSpareparts.sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}));
 
                     renderSparepartDropdown(allSpareparts);
+                })
+                .catch(err => {
+                    console.error("Gagal memuat sparepart:", err);
+                    document.getElementById("sparepart").innerHTML = '<option value="">Gagal memuat daftar sparepart</option>';
                 });
         }
 
-        // Render Opsi ke dalam elemen <select>
         function renderSparepartDropdown(items) {
             const selectEl = document.getElementById("sparepart");
+            
+            if (items.length === 0) {
+                selectEl.innerHTML = '<option value="">-- Sparepart Tidak Ditemukan --</option>';
+                return;
+            }
+
             selectEl.innerHTML = '<option value="">-- Pilih Sparepart --</option>';
 
             items.forEach(item => {
@@ -229,16 +225,15 @@
             });
         }
 
-        // Filter Dropdown saat pengguna mengetik di kotak pencarian
+        // Fitur Filter Teks (Tidak membedakan Huruf Besar / Kecil)
         function filterDropdown() {
             const keyword = document.getElementById("search-sparepart").value.toLowerCase();
             const filtered = allSpareparts.filter(item => item.toLowerCase().includes(keyword));
             renderSparepartDropdown(filtered);
         }
 
-        // Fetch Riwayat SO
         function loadSOData() {
-            fetch(`${API_URL}?sheet=STOCK OPNAME`)
+            fetch(`${BASE_API_URL}?sheet=STOCK OPNAME`)
                 .then(res => res.json())
                 .then(data => {
                     let html = "";
@@ -263,7 +258,6 @@
                 });
         }
 
-        // Handler Submit Form SO
         document.getElementById("form-so").addEventListener("submit", function(e) {
             e.preventDefault();
             const btn = document.getElementById("btn-submit");
@@ -278,7 +272,7 @@
                 keterangan: document.getElementById("keterangan").value
             };
 
-            fetch(API_URL, {
+            fetch(BASE_API_URL, {
                 method: "POST",
                 body: JSON.stringify(payload)
             })
@@ -297,7 +291,6 @@
             });
         });
 
-        // Jalankan Pengecekan Akses Otomatis
         checkAuth();
     </script>
 </body>
