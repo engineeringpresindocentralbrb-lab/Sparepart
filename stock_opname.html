@@ -240,14 +240,22 @@
                         selectEl.appendChild(opt);
                     });
 
-                    // Inisialisasi TomSelect untuk Pencarian & Dropdown
+                    // Inisialisasi TomSelect dengan Fitur Pencarian Tidak Peka Kapitalisasi (Case-Insensitive)
                     if (tomSelectInstance) {
                         tomSelectInstance.destroy();
                     }
                     tomSelectInstance = new TomSelect("#sparepart", {
                         create: false,
                         maxOptions: null, // Menampilkan seluruh opsi dalam scroll
-                        sortField: { field: "text", direction: "asc" } // Mengurutkan A-Z
+                        sortField: { field: "text", direction: "asc" }, // Mengurutkan A-Z
+                        searchField: ['text', 'value'],
+                        // Mengabaikan perbedaan huruf kapital/kecil saat pencarian
+                        score: function(search) {
+                            var score = this.getScoreFunction(search);
+                            return function(item) {
+                                return score(item);
+                            };
+                        }
                     });
                 });
         }
