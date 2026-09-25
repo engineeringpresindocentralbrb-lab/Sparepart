@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 min-h-screen">
+    <!-- Header Navigation -->
     <nav class="bg-slate-900 text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="text-xl font-bold">📦 System Monitoring Stok</h1>
@@ -22,20 +23,24 @@
     </nav>
 
     <div class="max-w-7xl mx-auto py-8 px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="bg-white p-6 rounded-xl shadow border">
-            <h2 class="text-xl font-bold text-slate-800 mb-4">📤 Form Input Barang Keluar</h2>
+        <!-- FORM INPUT BARANG KELUAR -->
+        <div class="bg-white p-6 rounded-xl shadow border border-slate-200">
+            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">📤 Form Input Barang Keluar</h2>
             <form id="form-keluar" class="space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-slate-700">Tanggal</label>
-                    <input type="date" id="tanggal" required class="w-full mt-1 p-2 border rounded-lg">
+                    <input type="date" id="tanggal" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-amber-500">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700">Mesin</label>
-                    <input type="text" id="mesin" placeholder="Contoh: D11, C14" class="w-full mt-1 p-2 border rounded-lg">
+                    <input type="text" id="mesin" placeholder="Contoh: D11, C14, B03" class="w-full mt-1 p-2 border rounded-lg">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700">Nama Sparepart</label>
-                    <input type="text" id="sparepart" required placeholder="Contoh: Air duster" class="w-full mt-1 p-2 border rounded-lg">
+                    <label class="block text-sm font-semibold text-slate-700">Nama Sparepart (Wajib dari Data Stok)</label>
+                    <input type="text" id="sparepart" list="sparepart-list" required placeholder="Ketik atau pilih sparepart..." class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-amber-500">
+                    <!-- Dropdown List Otomatis dari DATA STOK -->
+                    <datalist id="sparepart-list"></datalist>
+                    <p class="text-xs text-slate-500 mt-1">*Nama sparepart harus sesuai dengan daftar master stok.</p>
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700">Jumlah (Qty)</label>
@@ -47,15 +52,16 @@
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700">Keterangan</label>
-                    <textarea id="keterangan" placeholder="Catatan perbaikan" class="w-full mt-1 p-2 border rounded-lg"></textarea>
+                    <textarea id="keterangan" placeholder="Catatan perbaikan / posisi barang" class="w-full mt-1 p-2 border rounded-lg"></textarea>
                 </div>
                 <button type="submit" id="btn-submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-lg transition">
-                    Simpan Barang Keluar
+                    Simpan Transaksi Keluar
                 </button>
             </form>
         </div>
 
-        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow border">
+        <!-- TABEL RIWAYAT BARANG KELUAR -->
+        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow border border-slate-200">
             <h2 class="text-xl font-bold text-slate-800 mb-4">Riwayat Barang Keluar</h2>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-sm">
@@ -68,8 +74,26 @@
     </div>
 
     <script>
+        // GANTI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
         const API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec";
 
+        let validSpareparts = [];
+
+        // 1. Load Daftar Sparepart untuk Dropdown Auto-Complete
+        function loadSparepartsList() {
+            fetch(`${API_URL}?action=getSpareparts`)
+                .then(res => res.json())
+                .then(data => {
+                    validSpareparts = data;
+                    let optionsHtml = "";
+                    data.forEach(item => {
+                        optionsHtml += `<option value="${item}">`;
+                    });
+                    document.getElementById("sparepart-list").innerHTML = optionsHtml;
+                });
+        }
+
+        // 2. Load Data Tabel Riwayat Barang Keluar
         function loadData() {
             fetch(`${API_URL}?sheet=BARANG KELUAR`)
                 .then(res => res.json())
@@ -85,8 +109,19 @@
                 });
         }
 
+        // 3. Submit Form & Validasi Nama Sparepart
         document.getElementById("form-keluar").addEventListener("submit", function(e) {
             e.preventDefault();
+            const sparepartInput = document.getElementById("sparepart").value.trim();
+
+            // Validasi Frontend: Cek apakah input cocok dengan daftar DATA STOK
+            const isValid = validSpareparts.some(item => item.toLowerCase() === sparepartInput.toLowerCase());
+
+            if (!isValid) {
+                alert(`⚠️ NAMA SPAREPART TIDAK DITEMUKAN!\n\nNama "${sparepartInput}" tidak ada di DATA STOK master.\nSilahkan pilih nama yang sesuai dari pilihan dropdown.`);
+                return;
+            }
+
             const btn = document.getElementById("btn-submit");
             btn.innerText = "Menyimpan...";
             btn.disabled = true;
@@ -95,23 +130,36 @@
                 sheetName: "BARANG KELUAR",
                 tanggal: document.getElementById("tanggal").value,
                 mesin: document.getElementById("mesin").value,
-                sparepart: document.getElementById("sparepart").value,
+                sparepart: sparepartInput,
                 qty: document.getElementById("qty").value,
                 nama: document.getElementById("nama").value,
                 keterangan: document.getElementById("keterangan").value
             };
 
-            fetch(API_URL, { method: "POST", body: JSON.stringify(payload) })
+            fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            })
             .then(res => res.json())
             .then(res => {
-                alert("Berhasil Disimpan!");
-                document.getElementById("form-keluar").reset();
-                btn.innerText = "Simpan Barang Keluar";
+                if(res.result === "success") {
+                    alert("✅ Transaksi Barang Keluar Berhasil Disimpan!");
+                    document.getElementById("form-keluar").reset();
+                    loadData();
+                } else {
+                    alert(res.message);
+                }
+                btn.innerText = "Simpan Transaksi Keluar";
                 btn.disabled = false;
-                loadData();
+            })
+            .catch(err => {
+                alert("❌ Gagal menyimpan data!");
+                btn.innerText = "Simpan Transaksi Keluar";
+                btn.disabled = false;
             });
         });
 
+        loadSparepartsList();
         loadData();
     </script>
 </body>
