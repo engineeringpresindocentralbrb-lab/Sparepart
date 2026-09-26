@@ -7,27 +7,36 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 min-h-screen">
-     <!-- NAVBAR RESPONSIF -->
-    <nav class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+
+    <!-- OVERLAY LOADING MODAL (Anti Spam Click) -->
+    <div id="loading-overlay" class="fixed inset-0 bg-slate-900 bg-opacity-60 flex flex-col items-center justify-center z-50 hidden">
+        <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center space-y-4 max-w-xs text-center">
+            <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <div>
+                <p class="font-bold text-slate-800 text-base">Menyimpan Data...</p>
+                <p class="text-xs text-slate-500 mt-1">Mohon tunggu sebentar, sedang mengirim ke database.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVBAR RESPONSIF -->
+    <nav class="bg-slate-900 text-white shadow-md sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <!-- Logo / Title -->
                 <h1 class="text-lg sm:text-xl font-bold flex items-center gap-2">
                     📦 <span class="truncate">System Monitoring Stok</span>
                 </h1>
 
-                <!-- Hamburger Button (Mobile Only) -->
-                <button id="menu-btn" type="button" class="lg:hidden p-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button id="menu-btn" type="button" onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path id="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
 
-                <!-- Navigation Links (Desktop) -->
                 <div class="hidden lg:flex items-center gap-1.5 xl:gap-2">
-                    <a href="index.html" class="px-3 py-2 bg-blue-600 rounded-lg text-sm font-semibold transition">Home</a>
+                    <a href="index.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Home</a>
                     <a href="data_stok.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Data Stok</a>
-                    <a href="barang_masuk.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Barang Masuk</a>
+                    <a href="barang_masuk.html" class="px-3 py-2 bg-blue-600 rounded-lg text-sm font-semibold transition">Barang Masuk</a>
                     <a href="barang_keluar.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Barang Keluar</a>
                     <a href="purchasing_request.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">PR Tracking</a>
                     <a href="rekap_pr.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Rekap Perlu PR</a>
@@ -36,11 +45,10 @@
             </div>
         </div>
 
-        <!-- Mobile Menu Dropdown -->
         <div id="mobile-menu" class="hidden lg:hidden bg-slate-800 border-t border-slate-700 px-4 pt-2 pb-4 space-y-1">
-            <a href="index.html" class="block px-3 py-2.5 bg-blue-600 rounded-lg text-base font-semibold text-white">Home</a>
+            <a href="index.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Home</a>
             <a href="data_stok.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Data Stok</a>
-            <a href="barang_masuk.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Barang Masuk</a>
+            <a href="barang_masuk.html" class="block px-3 py-2.5 bg-blue-600 rounded-lg text-base font-semibold text-white">Barang Masuk</a>
             <a href="barang_keluar.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Barang Keluar</a>
             <a href="purchasing_request.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">PR Tracking</a>
             <a href="rekap_pr.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Rekap Perlu PR</a>
@@ -49,29 +57,41 @@
     </nav>
 
     <div class="max-w-7xl mx-auto py-8 px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="bg-white p-6 rounded-xl shadow border">
-            <h2 class="text-xl font-bold text-slate-800 mb-4">📥 Form Input Barang Masuk</h2>
+        <div class="bg-white p-6 rounded-xl shadow border border-slate-200">
+            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">📥 Form Input Barang Masuk</h2>
             <form id="form-masuk" class="space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-slate-700">Tanggal</label>
-                    <input type="date" id="tanggal" required class="w-full mt-1 p-2 border rounded-lg">
+                    <input type="date" id="tanggal" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700">Nama Sparepart</label>
-                    <input type="text" id="sparepart" required placeholder="Contoh: Saklar E-TEN 1322" class="w-full mt-1 p-2 border rounded-lg">
+                    <label class="block text-sm font-semibold text-slate-700">Nama Sparepart (Wajib ada di Stok)</label>
+                    <input type="text" id="sparepart" list="sparepart-list" required placeholder="Ketik atau pilih sparepart..." class="w-full mt-1 p-2 border rounded-lg">
+                    <datalist id="sparepart-list"></datalist>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700">Jumlah (Qty)</label>
+                    <label class="block text-sm font-semibold text-slate-700">Jumlah Masuk (Qty)</label>
                     <input type="number" id="qty" required min="1" value="1" class="w-full mt-1 p-2 border rounded-lg">
                 </div>
-                <button type="submit" id="btn-submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 rounded-lg transition">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700">Supplier / Pemasok</label>
+                    <input type="text" id="supplier" placeholder="Contoh: PT. Teknik Jaya" class="w-full mt-1 p-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700">Keterangan / No. PO</label>
+                    <textarea id="keterangan" placeholder="Nomor PO / Catatan kedatangan" class="w-full mt-1 p-2 border rounded-lg"></textarea>
+                </div>
+                <button type="submit" id="btn-submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition flex items-center justify-center gap-2">
                     Simpan Barang Masuk
                 </button>
             </form>
         </div>
 
-        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow border">
-            <h2 class="text-xl font-bold text-slate-800 mb-4">Riwayat Barang Masuk</h2>
+        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow border border-slate-200">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-slate-800">Riwayat Barang Masuk</h2>
+                <button onclick="loadData()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-3 py-1.5 rounded-lg transition">🔄 Refresh</button>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-sm">
                     <tbody id="table-body">
@@ -84,6 +104,21 @@
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec";
+        let validSpareparts = [];
+        let isSubmitting = false;
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById("mobile-menu");
+            menu.classList.toggle("hidden");
+        }
+
+        function setTanggalHariIni() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            document.getElementById("tanggal").value = `${year}-${month}-${day}`;
+        }
 
         function formatDate(value) {
             if (!value) return "-";
@@ -99,49 +134,129 @@
             return value;
         }
 
+        function loadSparepartsList() {
+            fetch(`${API_URL}?sheet=DATA STOK`)
+                .then(res => res.json())
+                .then(data => {
+                    validSpareparts = [];
+                    let optionsHtml = "";
+                    if (Array.isArray(data)) {
+                        data.forEach((row, index) => {
+                            if (index < 4) return;
+                            let nama = row[1];
+                            if (nama && typeof nama === 'string') {
+                                nama = nama.trim();
+                                if (nama !== "" && !validSpareparts.includes(nama)) {
+                                    validSpareparts.push(nama);
+                                    optionsHtml += `<option value="${nama}">`;
+                                }
+                            }
+                        });
+                    }
+                    document.getElementById("sparepart-list").innerHTML = optionsHtml;
+                })
+                .catch(err => console.error("Gagal memuat list sparepart:", err));
+        }
+
         function loadData() {
             fetch(`${API_URL}?sheet=BARANG MASUK`)
                 .then(res => res.json())
                 .then(data => {
                     let html = "";
-                    data.forEach((row, index) => {
-                        if (index < 3) return;
-                        html += `<tr class="${index === 3 ? 'bg-slate-800 text-white font-bold' : 'border-b hover:bg-slate-50'}">`;
-                        row.forEach((cell, cellIdx) => {
-                            let cellVal = (cell !== undefined && cell !== null) ? cell : '';
-                            if (cellIdx === 0 && index > 3) cellVal = formatDate(cellVal);
-                            html += `<td class="p-3 border-slate-200">${cellVal}</td>`;
+                    if (!data || data.length <= 3) {
+                        html = `<tr><td class="p-4 text-center text-slate-500">Belum ada riwayat Barang Masuk.</td></tr>`;
+                    } else {
+                        data.forEach((row, index) => {
+                            if (index < 3) return;
+                            html += `<tr class="${index === 3 ? 'bg-slate-800 text-white font-bold' : 'border-b hover:bg-slate-50'}">`;
+                            row.forEach((cell, cellIdx) => {
+                                let cellVal = (cell !== undefined && cell !== null) ? cell : '';
+                                if (cellIdx === 0 && index > 3) cellVal = formatDate(cellVal);
+                                html += `<td class="p-3 border-slate-200">${cellVal}</td>`;
+                            });
+                            html += `</tr>`;
                         });
-                        html += `</tr>`;
-                    });
+                    }
                     document.getElementById("table-body").innerHTML = html;
+                })
+                .catch(err => {
+                    document.getElementById("table-body").innerHTML = `<tr><td class="p-4 text-center text-red-600">Gagal memuat data: ${err.message}</td></tr>`;
                 });
         }
 
         document.getElementById("form-masuk").addEventListener("submit", function(e) {
             e.preventDefault();
+
+            if (isSubmitting) return;
+
+            const sparepartInput = document.getElementById("sparepart").value.trim();
+
+            if (validSpareparts.length > 0) {
+                const isValid = validSpareparts.some(item => item.toLowerCase() === sparepartInput.toLowerCase());
+                if (!isValid) {
+                    alert(`⚠️ NAMA SPAREPART TIDAK DITEMUKAN!\n\nNama "${sparepartInput}" tidak ada di DATA STOK master.\nSilakan pilih dari pilihan dropdown.`);
+                    return;
+                }
+            }
+
+            isSubmitting = true;
             const btn = document.getElementById("btn-submit");
-            btn.innerText = "Menyimpan...";
+            const overlay = document.getElementById("loading-overlay");
+
+            btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Menyimpan...`;
             btn.disabled = true;
+            btn.classList.add("opacity-60", "cursor-not-allowed");
+            overlay.classList.remove("hidden");
 
             const payload = {
                 sheetName: "BARANG MASUK",
                 tanggal: document.getElementById("tanggal").value,
-                sparepart: document.getElementById("sparepart").value,
-                qty: document.getElementById("qty").value
+                sparepart: sparepartInput,
+                qty: document.getElementById("qty").value,
+                supplier: document.getElementById("supplier").value,
+                keterangan: document.getElementById("keterangan").value
             };
 
-            fetch(API_URL, { method: "POST", body: JSON.stringify(payload) })
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payload)
+            })
             .then(res => res.json())
             .then(res => {
-                alert("Berhasil Disimpan!");
-                document.getElementById("form-masuk").reset();
-                btn.innerText = "Simpan Barang Masuk";
-                btn.disabled = false;
-                loadData();
+                if (res.result === "success") {
+                    alert("✅ Berhasil Disimpan!");
+                    document.getElementById("form-masuk").reset();
+                    setTanggalHariIni();
+                    loadData();
+                } else {
+                    alert("❌ Gagal: " + (res.message || "Gagal menyimpan data."));
+                }
+            })
+            .catch(err => {
+                alert("⚠️ Terjadi kesalahan koneksi/server: " + err.message);
+            })
+            .finally(() => {
+                overlay.classList.add("hidden");
+
+                let cooldownSeconds = 3;
+                const cooldownInterval = setInterval(() => {
+                    btn.innerText = `Tunggu (${cooldownSeconds}s)...`;
+                    cooldownSeconds--;
+
+                    if (cooldownSeconds < 0) {
+                        clearInterval(cooldownInterval);
+                        btn.innerText = "Simpan Barang Masuk";
+                        btn.disabled = false;
+                        btn.classList.remove("opacity-60", "cursor-not-allowed");
+                        isSubmitting = false;
+                    }
+                }, 1000);
             });
         });
 
+        setTanggalHariIni();
+        loadSparepartsList();
         loadData();
     </script>
 </body>
