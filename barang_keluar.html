@@ -7,17 +7,44 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 min-h-screen">
-    <nav class="bg-slate-900 text-white shadow-md">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold">📦 System Monitoring Stok</h1>
-            <div class="flex gap-2">
-                <a href="index.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Home</a>
-                <a href="data_stok.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Data Stok</a>
-                <a href="barang_masuk.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Barang Masuk</a>
-                <a href="barang_keluar.html" class="px-3 py-2 bg-amber-600 rounded-lg text-sm font-semibold">Barang Keluar</a>
-                <a href="purchasing_request.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">PR Tracking</a>
-                <a href="rekap_pr.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Rekap Perlu PR</a>
+     <!-- NAVBAR RESPONSIF -->
+    <nav class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo / Title -->
+                <h1 class="text-lg sm:text-xl font-bold flex items-center gap-2">
+                    📦 <span class="truncate">System Monitoring Stok</span>
+                </h1>
+
+                <!-- Hamburger Button (Mobile Only) -->
+                <button id="menu-btn" type="button" class="lg:hidden p-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path id="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+
+                <!-- Navigation Links (Desktop) -->
+                <div class="hidden lg:flex items-center gap-1.5 xl:gap-2">
+                    <a href="index.html" class="px-3 py-2 bg-blue-600 rounded-lg text-sm font-semibold transition">Home</a>
+                    <a href="data_stok.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Data Stok</a>
+                    <a href="barang_masuk.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Barang Masuk</a>
+                    <a href="barang_keluar.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Barang Keluar</a>
+                    <a href="purchasing_request.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">PR Tracking</a>
+                    <a href="rekap_pr.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Rekap Perlu PR</a>
+                    <a href="stock_opname.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Stock Opname</a>
+                </div>
             </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-slate-800 border-t border-slate-700 px-4 pt-2 pb-4 space-y-1">
+            <a href="index.html" class="block px-3 py-2.5 bg-blue-600 rounded-lg text-base font-semibold text-white">Home</a>
+            <a href="data_stok.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Data Stok</a>
+            <a href="barang_masuk.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Barang Masuk</a>
+            <a href="barang_keluar.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Barang Keluar</a>
+            <a href="purchasing_request.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">PR Tracking</a>
+            <a href="rekap_pr.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Rekap Perlu PR</a>
+            <a href="stock_opname.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Stock Opname</a>
         </div>
     </nav>
 
