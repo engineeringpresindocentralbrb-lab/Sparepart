@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PR Tracking</title>
+    <title>PR Tracking (Outstanding)</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 min-h-screen">
 
+    <!-- OVERLAY LOADING -->
     <div id="loading-overlay" class="fixed inset-0 bg-slate-900 bg-opacity-60 flex flex-col items-center justify-center z-50 hidden">
         <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center space-y-4 max-w-xs text-center">
             <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
@@ -15,6 +16,7 @@
         </div>
     </div>
 
+    <!-- NAVBAR -->
     <nav class="bg-slate-900 text-white shadow-md sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -33,6 +35,7 @@
     </nav>
 
     <div class="max-w-7xl mx-auto py-8 px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- FORM INPUT PR -->
         <div class="bg-white p-6 rounded-xl shadow border border-slate-200">
             <h2 class="text-xl font-bold text-slate-800 mb-4">📝 Buat Purchasing Request (PR)</h2>
             <form id="form-pr" class="space-y-4">
@@ -62,10 +65,14 @@
             </form>
         </div>
 
+        <!-- TABEL TRACKING PR UNOPEN/OPEN ONLY -->
         <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow border border-slate-200">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-slate-800">Daftar Tracking PR</h2>
-                <button onclick="loadData()" class="bg-slate-800 text-white text-xs px-3 py-1.5 rounded-lg">🔄 Refresh</button>
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Daftar PR Belum Selesai (Outstanding)</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Menampilkan PR dengan status belum Close / belum dibeli.</p>
+                </div>
+                <button onclick="loadData()" class="bg-slate-800 text-white text-xs px-3 py-1.5 rounded-lg hover:bg-slate-700 transition">🔄 Refresh</button>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-sm">
@@ -92,14 +99,40 @@
                     if (!data || data.length <= 4) {
                         html = `<tr><td class="p-4 text-center text-slate-500">Belum ada data PR.</td></tr>`;
                     } else {
+                        let countOutstanding = 0;
+
                         data.forEach((row, index) => {
+                            // Tampilkan baris Header (index == 3)
+                            if (index === 3) {
+                                html += `<tr class="bg-slate-800 text-white font-bold">`;
+                                row.forEach(cell => {
+                                    html += `<td class="p-3 border-slate-200">${cell !== undefined ? cell : ''}</td>`;
+                                });
+                                html += `</tr>`;
+                                return;
+                            }
+
                             if (index < 3) return;
-                            html += `<tr class="${index === 3 ? 'bg-slate-800 text-white font-bold' : 'border-b hover:bg-slate-50'}">`;
-                            row.forEach(cell => {
-                                html += `<td class="p-3 border-slate-200">${cell !== undefined ? cell : ''}</td>`;
-                            });
-                            html += `</tr>`;
+
+                            // Penggabungan teks seluruh baris untuk cek status (Case Insensitive)
+                            const rowText = row.map(c => String(c).toLowerCase()).join(" ");
+
+                            // Filter: Lewati baris jika sudah "close", "selesai", "lunas", atau "done"
+                            const isClosed = rowText.includes("close") || rowText.includes("selesai") || rowText.includes("done");
+
+                            if (!isClosed) {
+                                countOutstanding++;
+                                html += `<tr class="border-b hover:bg-slate-50">`;
+                                row.forEach(cell => {
+                                    html += `<td class="p-3 border-slate-200">${cell !== undefined ? cell : ''}</td>`;
+                                });
+                                html += `</tr>`;
+                            }
                         });
+
+                        if (countOutstanding === 0) {
+                            html += `<tr><td colspan="100%" class="p-4 text-center text-slate-500">Semua PR telah selesai / Close.</td></tr>`;
+                        }
                     }
                     document.getElementById("table-body").innerHTML = html;
                 });
