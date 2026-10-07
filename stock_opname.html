@@ -3,138 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Opname (SO)</title>
+    <title>Stock Opname</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 min-h-screen">
 
-    <!-- OVERLAY LOADING MODAL -->
     <div id="loading-overlay" class="fixed inset-0 bg-slate-900 bg-opacity-60 flex flex-col items-center justify-center z-50 hidden">
         <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center space-y-4 max-w-xs text-center">
             <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
             <div>
                 <p class="font-bold text-slate-800 text-base">Menyimpan Stock Opname...</p>
-                <p class="text-xs text-slate-500 mt-1">Sistem sedang memperbarui stok fisik di database.</p>
+                <p class="text-xs text-slate-500 mt-1">Sistem sedang memperbarui hasil penyesuaian fisik.</p>
             </div>
         </div>
     </div>
 
-    <!-- MODAL GATE PASSWORD -->
-    <div id="password-gate" class="fixed inset-0 bg-slate-900 bg-opacity-90 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4">
-            <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
-                🔒
-            </div>
-            <h2 class="text-xl font-bold text-slate-800">Akses Terkunci</h2>
-            <p class="text-xs text-slate-500">Masukkan kata sandi khusus untuk mengakses halaman Stock Opname.</p>
-            
-            <div>
-                <input type="password" id="input-password" placeholder="Masukkan Password" 
-                    class="w-full text-center text-lg p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                <p id="error-msg" class="text-xs text-red-500 mt-2 font-semibold hidden">⚠️ Password salah! Akses ditolak.</p>
-            </div>
-
-            <div class="flex gap-2">
-                <a href="index.html" class="w-1/2 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-lg text-sm transition text-center flex items-center justify-center">Batal</a>
-                <button onclick="checkPassword()" class="w-1/2 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm transition">Masuk</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- NAVBAR RESPONSIF -->
+    <!-- NAVBAR -->
     <nav class="bg-slate-900 text-white shadow-md sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <!-- Logo / Title -->
-                <h1 class="text-lg sm:text-xl font-bold flex items-center gap-2">
-                    📦 <span class="truncate">System Monitoring Stok</span>
-                </h1>
-
-                <!-- Hamburger Button (Mobile Only) -->
-                <button id="menu-btn" type="button" onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path id="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
-                </button>
-
-                <!-- Navigation Links (Desktop) -->
-                <div class="hidden lg:flex items-center gap-1.5 xl:gap-2">
-                    <a href="index.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Home</a>
-                    <a href="data_stok.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Data Stok</a>
-                    <a href="barang_masuk.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Barang Masuk</a>
-                    <a href="barang_keluar.html" class="px-3 py-2 bg-amber-600 rounded-lg text-sm font-semibold transition">Barang Keluar</a>
-                    <a href="purchasing_request.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">PR Tracking</a>
-                    <a href="rekap_pr.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Rekap Perlu PR</a>
-                    <a href="stock_opname.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">Stock Opname</a>
+                <h1 class="text-lg sm:text-xl font-bold flex items-center gap-2">📦 <span class="truncate">System Monitoring Stok</span></h1>
+                <div class="hidden lg:flex items-center gap-1.5">
+                    <a href="index.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Home</a>
+                    <a href="data_stok.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Data Stok</a>
+                    <a href="barang_masuk.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Barang Masuk</a>
+                    <a href="barang_keluar.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Barang Keluar</a>
+                    <a href="purchasing_request.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">PR Tracking</a>
+                    <a href="rekap_pr.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Rekap Perlu PR</a>
+                    <a href="stock_opname.html" class="px-3 py-2 bg-blue-600 rounded-lg text-sm font-semibold">Stock Opname</a>
                 </div>
             </div>
-        </div>
-
-        <!-- Mobile Menu Dropdown -->
-        <div id="mobile-menu" class="hidden lg:hidden bg-slate-800 border-t border-slate-700 px-4 pt-2 pb-4 space-y-1">
-            <a href="index.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Home</a>
-            <a href="data_stok.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Data Stok</a>
-            <a href="barang_masuk.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Barang Masuk</a>
-            <a href="barang_keluar.html" class="block px-3 py-2.5 bg-amber-600 rounded-lg text-base font-semibold text-white">Barang Keluar</a>
-            <a href="purchasing_request.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">PR Tracking</a>
-            <a href="rekap_pr.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Rekap Perlu PR</a>
-            <a href="stock_opname.html" class="block px-3 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-base">Stock Opname</a>
         </div>
     </nav>
 
     <div class="max-w-7xl mx-auto py-8 px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- FORM INPUT STOCK OPNAME -->
         <div class="bg-white p-6 rounded-xl shadow border border-slate-200">
-            <h2 class="text-xl font-bold text-slate-800 mb-2">📋 Form Stock Opname</h2>
-            <p class="text-xs text-amber-700 bg-amber-50 p-2.5 rounded border border-amber-200 mb-4">
-                ⚠️ Nilai Qty SO akan <strong>memotong/membypass stok awal</strong> di DATA STOK sehingga Sisa Stok otomatis menyesuaikan dengan hasil SO fisik terbaru.
-            </p>
+            <h2 class="text-xl font-bold text-slate-800 mb-4">📋 Form Input Stock Opname</h2>
             <form id="form-so" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700">Tanggal SO (Otomatis)</label>
-                    <input type="date" id="tanggal" required readonly class="w-full mt-1 p-2 border rounded-lg bg-slate-100 text-slate-600 cursor-not-allowed focus:outline-none">
+                    <label class="block text-sm font-semibold text-slate-700">Tanggal SO</label>
+                    <input type="date" id="tanggal" required class="w-full mt-1 p-2 border rounded-lg">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Sparepart</label>
-                    <input type="text" id="search-sparepart" oninput="filterDropdown()" placeholder="🔍 Ketik kata kunci (misal: heater)..." 
-                        class="w-full mb-2 p-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-
-                    <select id="sparepart" required class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-sm">
-                        <option value="">-- Memuat Sparepart... --</option>
-                    </select>
+                    <label class="block text-sm font-semibold text-slate-700">Nama Sparepart</label>
+                    <input type="text" id="sparepart" list="sparepart-list" required placeholder="Pilih sparepart..." class="w-full mt-1 p-2 border rounded-lg">
+                    <datalist id="sparepart-list"></datalist>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700">Qty Hasil SO (Fisik)</label>
-                    <input type="number" id="qtySO" required min="0" placeholder="Jumlah fisik stok di gudang" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-sm font-semibold text-slate-700">Qty Hasil Fisik (SO)</label>
+                    <input type="number" id="qtySO" required min="0" class="w-full mt-1 p-2 border rounded-lg">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700">Keterangan / Alasan SO</label>
-                    <textarea id="keterangan" placeholder="Contoh: Penyesuaian fisik bulanan / Barang rusak" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                    <label class="block text-sm font-semibold text-slate-700">Keterangan / Selisih</label>
+                    <textarea id="keterangan" placeholder="Catatan selisih fisik vs sistem" class="w-full mt-1 p-2 border rounded-lg"></textarea>
                 </div>
-                <button type="submit" id="btn-submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition flex items-center justify-center gap-2">
-                    Simpan Stock Opname
+                <button type="submit" id="btn-submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition">
+                    Simpan Hasil SO
                 </button>
             </form>
         </div>
 
-        <!-- TABEL RIWAYAT STOCK OPNAME -->
         <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow border border-slate-200">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-slate-800">Riwayat Stock Opname (SO)</h2>
-                <button onclick="loadSOData()" class="bg-slate-800 text-white text-xs px-3 py-1.5 rounded-lg hover:bg-slate-700 transition">🔄 Refresh</button>
+                <h2 class="text-xl font-bold text-slate-800">Riwayat Stock Opname</h2>
+                <button onclick="loadData()" class="bg-slate-800 text-white text-xs px-3 py-1.5 rounded-lg">🔄 Refresh</button>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-sm">
-                    <thead>
-                        <tr class="bg-slate-900 text-white font-bold">
-                            <th class="p-3">Tanggal SO</th>
-                            <th class="p-3">Nama Sparepart</th>
-                            <th class="p-3">Qty SO (Fisik)</th>
-                            <th class="p-3">Keterangan</th>
-                        </tr>
-                    </thead>
                     <tbody id="table-body">
-                        <tr><td colspan="4" class="p-4 text-center text-slate-500">Memuat riwayat SO...</td></tr>
+                        <tr><td class="p-4 text-center">Memuat riwayat...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -142,133 +79,47 @@
     </div>
 
     <script>
-        const HASH_PASSWORD_BENAR = "6c878693197d99d54d289ae5a8147fe4e77f94d9df5b5cdc7a0fd9f674165db7";
-        const BASE_API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec";
-        let allSpareparts = [];
-        let isSubmitting = false;
+        const API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec";
+        let validSpareparts = [];
 
         function setTanggalHariIni() {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            document.getElementById("tanggal").value = `${year}-${month}-${day}`;
+            document.getElementById("tanggal").value = new Date().toISOString().split('T')[0];
         }
 
-        async function sha256(str) {
-            const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        function checkAuth() {
-            if (sessionStorage.getItem("so_authenticated") === "true") {
-                document.getElementById("password-gate").classList.add("hidden");
-                loadSparepartsFromMaster();
-                loadSOData();
-            }
-        }
-
-        async function checkPassword() {
-            const inputPass = document.getElementById("input-password").value;
-            const errorMsg = document.getElementById("error-msg");
-            const inputHash = await sha256(inputPass);
-
-            if (inputHash === HASH_PASSWORD_BENAR) {
-                sessionStorage.setItem("so_authenticated", "true");
-                document.getElementById("password-gate").classList.add("hidden");
-                errorMsg.classList.add("hidden");
-                loadSparepartsFromMaster();
-                loadSOData();
-            } else {
-                errorMsg.classList.remove("hidden");
-                document.getElementById("input-password").value = "";
-            }
-        }
-
-        document.getElementById("input-password").addEventListener("keyup", function(e) {
-            if (e.key === "Enter") checkPassword();
-        });
-
-        function formatDate(value) {
-            if (!value) return "-";
-            if (typeof value === "string" && value.includes("T")) {
-                const date = new Date(value);
-                if (!isNaN(date.getTime())) {
-                    const day = String(date.getDate()).padStart(2, '0');
-                    const month = String(date.getMonth() + 1).padStart(2, '0');
-                    const year = date.getFullYear();
-                    return `${day}/${month}/${year}`;
-                }
-            }
-            return value;
-        }
-
-        function loadSparepartsFromMaster() {
-            fetch(`${BASE_API_URL}?sheet=DATA STOK`)
+        function loadSparepartsList() {
+            fetch(`${API_URL}?sheet=DATA STOK`)
                 .then(res => res.json())
                 .then(data => {
-                    allSpareparts = [];
+                    validSpareparts = [];
+                    let optionsHtml = "";
                     if (Array.isArray(data)) {
                         data.forEach((row, index) => {
                             if (index < 4) return;
                             let nama = row[1];
-                            if (nama && typeof nama === 'string') {
-                                nama = nama.trim();
-                                if (nama !== "" && !allSpareparts.includes(nama)) {
-                                    allSpareparts.push(nama);
-                                }
+                            if (nama && typeof nama === 'string' && nama.trim() !== "") {
+                                validSpareparts.push(nama.trim());
+                                optionsHtml += `<option value="${nama.trim()}">`;
                             }
                         });
                     }
-                    allSpareparts.sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}));
-                    renderSparepartDropdown(allSpareparts);
-                })
-                .catch(err => {
-                    document.getElementById("sparepart").innerHTML = '<option value="">Gagal memuat daftar sparepart</option>';
+                    document.getElementById("sparepart-list").innerHTML = optionsHtml;
                 });
         }
 
-        function renderSparepartDropdown(items) {
-            const selectEl = document.getElementById("sparepart");
-            if (items.length === 0) {
-                selectEl.innerHTML = '<option value="">-- Sparepart Tidak Ditemukan --</option>';
-                return;
-            }
-            selectEl.innerHTML = '<option value="">-- Pilih Sparepart --</option>';
-            items.forEach(item => {
-                const opt = document.createElement("option");
-                opt.value = item;
-                opt.textContent = item;
-                selectEl.appendChild(opt);
-            });
-        }
-
-        function filterDropdown() {
-            const keyword = document.getElementById("search-sparepart").value.toLowerCase();
-            const filtered = allSpareparts.filter(item => item.toLowerCase().includes(keyword));
-            renderSparepartDropdown(filtered);
-        }
-
-        function loadSOData() {
-            fetch(`${BASE_API_URL}?sheet=STOCK OPNAME`)
+        function loadData() {
+            fetch(`${API_URL}?sheet=STOCK OPNAME`)
                 .then(res => res.json())
                 .then(data => {
                     let html = "";
                     if (!data || data.length <= 1) {
-                        html = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Belum ada riwayat Stock Opname.</td></tr>`;
+                        html = `<tr><td class="p-4 text-center text-slate-500">Belum ada riwayat SO.</td></tr>`;
                     } else {
                         data.forEach((row, index) => {
-                            if (index === 0) return;
-                            if (!row[0] && !row[1]) return;
-
-                            html += `
-                                <tr class="border-b hover:bg-slate-50">
-                                    <td class="p-3 border-slate-200">${formatDate(row[0])}</td>
-                                    <td class="p-3 border-slate-200 font-medium">${row[1]}</td>
-                                    <td class="p-3 border-slate-200 font-bold text-blue-700">${row[2]}</td>
-                                    <td class="p-3 border-slate-200 text-slate-600">${row[3] || "-"}</td>
-                                </tr>
-                            `;
+                            html += `<tr class="${index === 0 ? 'bg-slate-800 text-white font-bold' : 'border-b hover:bg-slate-50'}">`;
+                            row.forEach(cell => {
+                                html += `<td class="p-3 border-slate-200">${cell !== undefined ? cell : ''}</td>`;
+                            });
+                            html += `</tr>`;
                         });
                     }
                     document.getElementById("table-body").innerHTML = html;
@@ -277,27 +128,25 @@
 
         document.getElementById("form-so").addEventListener("submit", function(e) {
             e.preventDefault();
+            const sparepartInput = document.getElementById("sparepart").value.trim();
 
-            if (isSubmitting) return;
+            if (validSpareparts.length > 0 && !validSpareparts.some(i => i.toLowerCase() === sparepartInput.toLowerCase())) {
+                alert(`⚠️ Sparepart "${sparepartInput}" tidak valid / tidak ada di Master DATA STOK.`);
+                return;
+            }
 
-            isSubmitting = true;
-            const btn = document.getElementById("btn-submit");
             const overlay = document.getElementById("loading-overlay");
-
-            btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Menyimpan...`;
-            btn.disabled = true;
-            btn.classList.add("opacity-60", "cursor-not-allowed");
             overlay.classList.remove("hidden");
 
             const payload = {
                 sheetName: "STOCK OPNAME",
                 tanggal: document.getElementById("tanggal").value,
-                sparepart: document.getElementById("sparepart").value,
+                sparepart: sparepartInput,
                 qtySO: document.getElementById("qtySO").value,
                 keterangan: document.getElementById("keterangan").value
             };
 
-            fetch(BASE_API_URL, {
+            fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify(payload)
@@ -305,40 +154,20 @@
             .then(res => res.json())
             .then(res => {
                 if (res.result === "success") {
-                    alert("✅ Berhasil Disimpan!");
+                    alert("✅ Stock Opname berhasil disimpan!");
                     document.getElementById("form-so").reset();
-                    document.getElementById("search-sparepart").value = "";
-                    renderSparepartDropdown(allSpareparts);
                     setTanggalHariIni();
-                    loadSOData();
+                    loadData();
                 } else {
-                    alert("❌ Gagal: " + (res.message || "Gagal menyimpan data."));
+                    alert("❌ Gagal: " + res.message);
                 }
             })
-            .catch(err => {
-                alert("⚠️ Terjadi kesalahan koneksi/server: " + err.message);
-            })
-            .finally(() => {
-                overlay.classList.add("hidden");
-
-                let cooldownSeconds = 3;
-                const cooldownInterval = setInterval(() => {
-                    btn.innerText = `Tunggu (${cooldownSeconds}s)...`;
-                    cooldownSeconds--;
-
-                    if (cooldownSeconds < 0) {
-                        clearInterval(cooldownInterval);
-                        btn.innerText = "Simpan Stock Opname";
-                        btn.disabled = false;
-                        btn.classList.remove("opacity-60", "cursor-not-allowed");
-                        isSubmitting = false;
-                    }
-                }, 1000);
-            });
+            .finally(() => overlay.classList.add("hidden"));
         });
 
         setTanggalHariIni();
-        checkAuth();
+        loadSparepartsList();
+        loadData();
     </script>
 </body>
 </html>
