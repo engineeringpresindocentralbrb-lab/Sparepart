@@ -8,12 +8,13 @@
 </head>
 <body class="bg-slate-100 min-h-screen">
 
+    <!-- OVERLAY LOADING MODAL -->
     <div id="loading-overlay" class="fixed inset-0 bg-slate-900 bg-opacity-60 flex flex-col items-center justify-center z-50 hidden">
         <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center space-y-4 max-w-xs text-center">
             <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
             <div>
                 <p class="font-bold text-slate-800 text-base">Menyimpan Stock Opname...</p>
-                <p class="text-xs text-slate-500 mt-1">Sistem sedang memperbarui hasil penyesuaian fisik.</p>
+                <p class="text-xs text-slate-500 mt-1">Sistem sedang memperbarui hasil penyesuaian fisik ke database stok.</p>
             </div>
         </div>
     </div>
@@ -22,51 +23,55 @@
     <nav class="bg-slate-900 text-white shadow-md sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <h1 class="text-lg sm:text-xl font-bold flex items-center gap-2">📦 <span class="truncate">System Monitoring Stok</span></h1>
+                <h1 class="text-lg sm:text-xl font-bold flex items-center gap-2">
+                    📦 <span class="truncate">System Monitoring Stok</span>
+                </h1>
                 <div class="hidden lg:flex items-center gap-1.5">
-                    <a href="index.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Home</a>
-                    <a href="data_stok.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Data Stok</a>
-                    <a href="barang_masuk.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Barang Masuk</a>
-                    <a href="barang_keluar.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Barang Keluar</a>
-                    <a href="purchasing_request.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">PR Tracking</a>
-                    <a href="rekap_pr.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm">Rekap Perlu PR</a>
-                    <a href="stock_opname.html" class="px-3 py-2 bg-blue-600 rounded-lg text-sm font-semibold">Stock Opname</a>
+                    <a href="index.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm transition">Home</a>
+                    <a href="data_stok.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm transition">Data Stok</a>
+                    <a href="barang_masuk.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm transition">Barang Masuk</a>
+                    <a href="barang_keluar.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm transition">Barang Keluar</a>
+                    <a href="purchasing_request.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm transition">PR Tracking</a>
+                    <a href="rekap_pr.html" class="px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-sm transition">Rekap Perlu PR</a>
+                    <a href="stock_opname.html" class="px-3 py-2 bg-blue-600 rounded-lg text-sm font-semibold transition">Stock Opname</a>
                 </div>
             </div>
         </div>
     </nav>
 
     <div class="max-w-7xl mx-auto py-8 px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- FORM INPUT -->
         <div class="bg-white p-6 rounded-xl shadow border border-slate-200">
-            <h2 class="text-xl font-bold text-slate-800 mb-4">📋 Form Input Stock Opname</h2>
+            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">📋 Form Stock Opname</h2>
             <form id="form-so" class="space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-slate-700">Tanggal SO</label>
-                    <input type="date" id="tanggal" required class="w-full mt-1 p-2 border rounded-lg">
+                    <input type="date" id="tanggal" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700">Nama Sparepart</label>
-                    <input type="text" id="sparepart" list="sparepart-list" required placeholder="Pilih sparepart..." class="w-full mt-1 p-2 border rounded-lg">
+                    <input type="text" id="sparepart" list="sparepart-list" required placeholder="Ketik atau pilih sparepart..." class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                     <datalist id="sparepart-list"></datalist>
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700">Qty Hasil Fisik (SO)</label>
-                    <input type="number" id="qtySO" required min="0" class="w-full mt-1 p-2 border rounded-lg">
+                    <input type="number" id="qtySO" required min="0" value="0" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700">Keterangan / Selisih</label>
-                    <textarea id="keterangan" placeholder="Catatan selisih fisik vs sistem" class="w-full mt-1 p-2 border rounded-lg"></textarea>
+                    <textarea id="keterangan" placeholder="Catatan selisih fisik vs sistem" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
-                <button type="submit" id="btn-submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition">
+                <button type="submit" id="btn-submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition flex items-center justify-center gap-2">
                     Simpan Hasil SO
                 </button>
             </form>
         </div>
 
+        <!-- TABEL RIWAYAT -->
         <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow border border-slate-200">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold text-slate-800">Riwayat Stock Opname</h2>
-                <button onclick="loadData()" class="bg-slate-800 text-white text-xs px-3 py-1.5 rounded-lg">🔄 Refresh</button>
+                <button onclick="loadData()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-3 py-1.5 rounded-lg transition">🔄 Refresh</button>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-sm">
@@ -81,9 +86,22 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwtwRjIfqeIJ635B32BkmzJkFf6V9617smGYYc1lC48o_-8rgXHYMIP3zNgrD6KMxZ1/exec";
         let validSpareparts = [];
+        let isSubmitting = false;
 
         function setTanggalHariIni() {
-            document.getElementById("tanggal").value = new Date().toISOString().split('T')[0];
+            const today = new Date();
+            document.getElementById("tanggal").value = today.toISOString().split('T')[0];
+        }
+
+        function formatDate(value) {
+            if (!value) return "-";
+            if (typeof value === "string" && value.includes("T")) {
+                const date = new Date(value);
+                if (!isNaN(date.getTime())) {
+                    return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+                }
+            }
+            return value;
         }
 
         function loadSparepartsList() {
@@ -96,9 +114,12 @@
                         data.forEach((row, index) => {
                             if (index < 4) return;
                             let nama = row[1];
-                            if (nama && typeof nama === 'string' && nama.trim() !== "") {
-                                validSpareparts.push(nama.trim());
-                                optionsHtml += `<option value="${nama.trim()}">`;
+                            if (nama && typeof nama === 'string') {
+                                nama = nama.trim();
+                                if (nama !== "" && !validSpareparts.includes(nama)) {
+                                    validSpareparts.push(nama);
+                                    optionsHtml += `<option value="${nama}">`;
+                                }
                             }
                         });
                     }
@@ -112,12 +133,14 @@
                 .then(data => {
                     let html = "";
                     if (!data || data.length <= 1) {
-                        html = `<tr><td class="p-4 text-center text-slate-500">Belum ada riwayat SO.</td></tr>`;
+                        html = `<tr><td class="p-4 text-center text-slate-500">Belum ada riwayat Stock Opname.</td></tr>`;
                     } else {
                         data.forEach((row, index) => {
                             html += `<tr class="${index === 0 ? 'bg-slate-800 text-white font-bold' : 'border-b hover:bg-slate-50'}">`;
-                            row.forEach(cell => {
-                                html += `<td class="p-3 border-slate-200">${cell !== undefined ? cell : ''}</td>`;
+                            row.forEach((cell, cellIdx) => {
+                                let cellVal = (cell !== undefined && cell !== null) ? cell : '';
+                                if (cellIdx === 0 && index > 0) cellVal = formatDate(cellVal);
+                                html += `<td class="p-3 border-slate-200">${cellVal}</td>`;
                             });
                             html += `</tr>`;
                         });
@@ -128,14 +151,23 @@
 
         document.getElementById("form-so").addEventListener("submit", function(e) {
             e.preventDefault();
+            if (isSubmitting) return;
+
             const sparepartInput = document.getElementById("sparepart").value.trim();
 
-            if (validSpareparts.length > 0 && !validSpareparts.some(i => i.toLowerCase() === sparepartInput.toLowerCase())) {
-                alert(`⚠️ Sparepart "${sparepartInput}" tidak valid / tidak ada di Master DATA STOK.`);
-                return;
+            if (validSpareparts.length > 0) {
+                const isValid = validSpareparts.some(item => item.toLowerCase() === sparepartInput.toLowerCase());
+                if (!isValid) {
+                    alert(`⚠️ NAMA SPAREPART TIDAK DITEMUKAN!\n\nNama "${sparepartInput}" tidak terdaftar di DATA STOK master.`);
+                    return;
+                }
             }
 
+            isSubmitting = true;
+            const btn = document.getElementById("btn-submit");
             const overlay = document.getElementById("loading-overlay");
+
+            btn.disabled = true;
             overlay.classList.remove("hidden");
 
             const payload = {
@@ -154,7 +186,7 @@
             .then(res => res.json())
             .then(res => {
                 if (res.result === "success") {
-                    alert("✅ Stock Opname berhasil disimpan!");
+                    alert("✅ Stock Opname Berhasil Disimpan!");
                     document.getElementById("form-so").reset();
                     setTanggalHariIni();
                     loadData();
@@ -162,7 +194,12 @@
                     alert("❌ Gagal: " + res.message);
                 }
             })
-            .finally(() => overlay.classList.add("hidden"));
+            .catch(err => alert("⚠️ Terjadi kesalahan koneksi: " + err.message))
+            .finally(() => {
+                overlay.classList.add("hidden");
+                btn.disabled = false;
+                isSubmitting = false;
+            });
         });
 
         setTanggalHariIni();
